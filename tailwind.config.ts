@@ -22,6 +22,9 @@ const config: Config = {
       },
       action: "#3B82F6",
     },
+    transitionProperty:{
+      width:'width',
+    },
     extend: {
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
@@ -30,6 +33,6 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/typography'),],
 };
 export default config;
