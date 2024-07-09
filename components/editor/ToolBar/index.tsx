@@ -15,10 +15,10 @@ import {
 	BsListOl,
 	BsListUl,
 	BsBraces,
-	BsLink45Deg,
 	BsYoutube,
 } from 'react-icons/bs'
 import InsertLink from '../Link/InsertLink'
+import { LinkOption } from '../Link/LinkForm'
 
 
 
@@ -63,6 +63,13 @@ const ToolBar: FC<IToolBar> = ({ editor }): JSX.Element | null => {
 		return 'Paragraph'
 	}
 
+	const handleLinkSubmit =({url, openInNewTab}:LinkOption)=>{
+		// console.log(url, openInNewTab);
+		const {commands}= editor
+		if(openInNewTab) commands.setLink({ href: url, target: '_blank' });else{commands.setLink({ href: url })}
+
+	}
+
 	const Head = () => {
 		return (
 			<div className='flex items-center space-x-2 text-primary-dark dark:text-primary'>
@@ -71,6 +78,8 @@ const ToolBar: FC<IToolBar> = ({ editor }): JSX.Element | null => {
 			</div>
 		)
 	}
+
+	
 	return (
 		<div className='flex items-center'>
 			{/* paragraph, heading 1, 2, 3  */}
@@ -119,7 +128,7 @@ const ToolBar: FC<IToolBar> = ({ editor }): JSX.Element | null => {
 						>
 				<BsBraces />
 			</Button>
-			<InsertLink/>
+			<InsertLink onSubmit={handleLinkSubmit}/>
 			<Button active={editor.isActive('orderedList')}
 			onClick={()=>{
 						getFocusedEditor(editor).toggleOrderedList().run()}}>
