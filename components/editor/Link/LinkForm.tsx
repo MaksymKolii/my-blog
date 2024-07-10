@@ -1,8 +1,9 @@
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { validateUrl } from '../EditorUtils'
 interface ILinkForm {
 	visible: boolean
 	onSubmit(someLink: LinkOption): void
+	initialState?:LinkOption
 }
 
 export type LinkOption = { url: string; openInNewTab: boolean }
@@ -10,10 +11,10 @@ export type LinkOption = { url: string; openInNewTab: boolean }
 	url: '',
 	openInNewTab: false,
 }
-const LinkForm: FC<ILinkForm> = ({ visible, onSubmit }): JSX.Element | null => {
+const LinkForm: FC<ILinkForm> = ({ visible, onSubmit,initialState }): JSX.Element | null => {
 	const [link, setLink] = useState<LinkOption>(defaultLink)
 
-	if (!visible) return null
+	
 
 	const handleSubmit = () => {
 		// if (!link.url.trim()) return
@@ -24,13 +25,20 @@ const LinkForm: FC<ILinkForm> = ({ visible, onSubmit }): JSX.Element | null => {
 	const resetForm =()=>{
 		setLink({...defaultLink})
 	}
+	
+	useEffect(()=>{
+		if(initialState) setLink({...initialState})
+	},[initialState])
+
+	if (!visible) return null
+
 	return (
 		<div className='rounded text-left bg-primary dark:bg-primary-dark animate-reveal z-50 dark:shadow-secondary-dark shadow-md p-2'>
 			<div className='flex items-center space-x-2'>
 				<input
 					autoFocus
 					type='text'
-					className='rounded bg-transparent focus:ring-0 focus:border-primary-dark dark:focus:border-primary transition dark:text-primary text-primary-dark'
+					className='rounded bg-transparent focus:ring-0 focus:border-primary-dark dark:focus:border-primary transition dark:text-primary text-primary-dark px-2'
 					placeholder='https://example.com'
 					value={link.url}
 					onChange={({ target }) => setLink({ ...link, url: target.value })}

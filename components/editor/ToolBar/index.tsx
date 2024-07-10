@@ -15,12 +15,10 @@ import {
 	BsListOl,
 	BsListUl,
 	BsBraces,
-	BsYoutube,
 } from 'react-icons/bs'
 import InsertLink from '../Link/InsertLink'
 import { LinkOption } from '../Link/LinkForm'
-
-
+import EmbedYoutube from './EmbedYoutube'
 
 interface IToolBar {
 	editor: Editor | null
@@ -63,13 +61,18 @@ const ToolBar: FC<IToolBar> = ({ editor }): JSX.Element | null => {
 		return 'Paragraph'
 	}
 
-	const handleLinkSubmit =({url, openInNewTab}:LinkOption)=>{
+	const handleLinkSubmit = ({ url, openInNewTab }: LinkOption) => {
 		// console.log(url, openInNewTab);
-		const {commands}= editor
-		if(openInNewTab) commands.setLink({ href: url, target: '_blank' });else{commands.setLink({ href: url })}
-
+		const { commands } = editor
+		if (openInNewTab) commands.setLink({ href: url, target: '_blank' })
+		else {
+			commands.setLink({ href: url })
+		}
 	}
-
+	const handelEmbedYoutube = (url: string) => {
+		editor.chain().focus().setYoutubeVideo({ src: url }).run()
+		// console.log(url)
+	}
 	const Head = () => {
 		return (
 			<div className='flex items-center space-x-2 text-primary-dark dark:text-primary'>
@@ -79,7 +82,6 @@ const ToolBar: FC<IToolBar> = ({ editor }): JSX.Element | null => {
 		)
 	}
 
-	
 	return (
 		<div className='flex items-center'>
 			{/* paragraph, heading 1, 2, 3  */}
@@ -87,66 +89,93 @@ const ToolBar: FC<IToolBar> = ({ editor }): JSX.Element | null => {
 			<DropdownOptions options={options} head={<Head />} />
 			<div className='h-4 w-[1px]  bg-secondary-dark dark:bg-highlight-light mx-8' />
 			<div className='flex items-center space-x-3'>
-				<Button active={editor.isActive('bold')} onClick={()=>{
-						getFocusedEditor(editor).toggleBold().run()}}>
-					<BsTypeBold 
-					
-					/>
+				<Button
+					active={editor.isActive('bold')}
+					onClick={() => {
+						getFocusedEditor(editor).toggleBold().run()
+					}}
+				>
+					<BsTypeBold />
 				</Button>
-				<Button active={editor.isActive('italic')}
-				 onClick={()=>{
-						getFocusedEditor(editor).toggleItalic().run()}}>
+				<Button
+					active={editor.isActive('italic')}
+					onClick={() => {
+						getFocusedEditor(editor).toggleItalic().run()
+					}}
+				>
 					<BsTypeItalic />
 				</Button>
-				<Button active={editor.isActive('underline')}
-				onClick={()=>{
-						getFocusedEditor(editor).toggleUnderline().run()}}
-						>
+				<Button
+					active={editor.isActive('underline')}
+					onClick={() => {
+						getFocusedEditor(editor).toggleUnderline().run()
+					}}
+				>
 					<BsTypeUnderline />
 				</Button>
-				<Button active={editor.isActive('strike')}
-				onClick={()=>{
-						getFocusedEditor(editor).toggleStrike().run()}}>
+				<Button
+					active={editor.isActive('strike')}
+					onClick={() => {
+						getFocusedEditor(editor).toggleStrike().run()
+					}}
+				>
 					<BsTypeStrikethrough />
 				</Button>
 			</div>
 			<div className='h-4 w-[1px]  bg-secondary-dark dark:bg-highlight-light mx-8' />
 			<div className='flex items-center space-x-3'>
-			<Button active={editor.isActive('blockquote')}
-			 onClick={()=>{
-						getFocusedEditor(editor).toggleBlockquote().run()}}>
-				<RiDoubleQuotesL />
-			</Button>
-			<Button active={editor.isActive('code')}
-			 onClick={()=>{
-						getFocusedEditor(editor).toggleCode().run()}}>
-				<BsCode />
-			</Button>
-			<Button active={editor.isActive('codeBlock')}
-			onClick={()=>{
-						getFocusedEditor(editor).toggleCodeBlock().run()}}
-						>
-				<BsBraces />
-			</Button>
-			<InsertLink onSubmit={handleLinkSubmit}/>
-			<Button active={editor.isActive('orderedList')}
-			onClick={()=>{
-						getFocusedEditor(editor).toggleOrderedList().run()}}>
-				<BsListOl />
-			</Button>
-			<Button active={editor.isActive('bulletList')}
-			onClick={()=>{
-						getFocusedEditor(editor).toggleBulletList().run()}}>
-				<BsListUl />
-			</Button></div>
+				<Button
+					active={editor.isActive('blockquote')}
+					onClick={() => {
+						getFocusedEditor(editor).toggleBlockquote().run()
+					}}
+				>
+					<RiDoubleQuotesL />
+				</Button>
+				<Button
+					active={editor.isActive('code')}
+					onClick={() => {
+						getFocusedEditor(editor).toggleCode().run()
+					}}
+				>
+					<BsCode />
+				</Button>
+				<Button
+					active={editor.isActive('codeBlock')}
+					onClick={() => {
+						getFocusedEditor(editor).toggleCodeBlock().run()
+					}}
+				>
+					<BsBraces />
+				</Button>
+				<InsertLink onSubmit={handleLinkSubmit} />
+				<Button
+					active={editor.isActive('orderedList')}
+					onClick={() => {
+						getFocusedEditor(editor).toggleOrderedList().run()
+					}}
+				>
+					<BsListOl />
+				</Button>
+				<Button
+					active={editor.isActive('bulletList')}
+					onClick={() => {
+						getFocusedEditor(editor).toggleBulletList().run()
+					}}
+				>
+					<BsListUl />
+				</Button>
+			</div>
 			<div className='h-4 w-[1px]  bg-secondary-dark dark:bg-highlight-light mx-8' />
 			<div className='flex items-center space-x-3'>
-			<Button>
+				<EmbedYoutube onSubmit={handelEmbedYoutube} />
+				{/* <Button>
 				<BsYoutube />
-			</Button>
-			<Button>
-				<BsImageFill />
-			</Button></div>
+			</Button> */}
+				<Button>
+					<BsImageFill />
+				</Button>
+			</div>
 		</div>
 	)
 }
