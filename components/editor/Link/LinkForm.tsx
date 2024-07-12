@@ -38,7 +38,7 @@ const LinkForm: FC<ILinkForm> = ({ visible, onSubmit,initialState }): JSX.Elemen
 				<input
 					autoFocus
 					type='text'
-					className='rounded bg-transparent focus:ring-0 focus:border-primary-dark dark:focus:border-primary transition dark:text-primary text-primary-dark px-2'
+					className='rounded bg-transparent  focus:border-primary-dark dark:focus:border-primary border-2 border-secondary-dark transition focus:ring-1 text-primary-dark dark:text-primary'
 					placeholder='https://example.com'
 					value={link.url}
 					onChange={({ target }) => setLink({ ...link, url: target.value })}

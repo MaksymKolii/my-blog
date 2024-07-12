@@ -8,11 +8,14 @@ import Youtube from '@tiptap/extension-youtube'
 import { FC, useEffect, useState } from 'react'
 import ToolBar from './ToolBar'
 import EditLink from './Link/EditLink'
+import GalleryModal from './GaleryModal'
 
 interface ITipTapEditor {}
 
 const TipTapEditor: FC<ITipTapEditor> = (props): JSX.Element => {
+
 	const [selectionRange, setSelectionRange] = useState<Range>()
+	const [showGallery, setShowGallery] = useState(false)
 
 	const editor = useEditor({
 		extensions: [
@@ -55,12 +58,15 @@ const TipTapEditor: FC<ITipTapEditor> = (props): JSX.Element => {
 		}
 	}, [editor, selectionRange])
 	return (
+		<>
 		<div className='p-3 dark:bg-primary-dark bg-primary transition'>
-			<ToolBar editor={editor} />
+			<ToolBar editor={editor} onOpenImageClick={()=>setShowGallery(true)}/>
 			<div className=' h-[1px] w-full dark:bg-secondary-light bg-secondary-light my-3' />
 			{editor ? <EditLink editor={editor} /> : null}
 			<EditorContent editor={editor} />
 		</div>
+		<GalleryModal visible={showGallery} onClose={()=>setShowGallery(false)}/>
+		</>
 	)
 }
 

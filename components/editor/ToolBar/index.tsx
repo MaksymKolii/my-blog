@@ -22,9 +22,10 @@ import EmbedYoutube from './EmbedYoutube'
 
 interface IToolBar {
 	editor: Editor | null
+	onOpenImageClick?():void
 }
 
-const ToolBar: FC<IToolBar> = ({ editor }): JSX.Element | null => {
+const ToolBar: FC<IToolBar> = ({ editor,onOpenImageClick }): JSX.Element | null => {
 	if (!editor) return null
 
 	const options = [
@@ -172,7 +173,7 @@ const ToolBar: FC<IToolBar> = ({ editor }): JSX.Element | null => {
 				{/* <Button>
 				<BsYoutube />
 			</Button> */}
-				<Button>
+				<Button onClick={onOpenImageClick}>
 					<BsImageFill />
 				</Button>
 			</div>

@@ -10,6 +10,19 @@ p.is-editor-empty:first-child::before {
   height: 0;
   pointer-events: none;
 }
+
+/*custom scroll css*/
+.custom-scroll-bar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+/* Handle */
+.custom-scroll-bar::-webkit-scrollbar-thumb {
+  background: rgb(202, 181, 226);
+}
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
