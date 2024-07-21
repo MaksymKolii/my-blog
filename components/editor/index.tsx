@@ -35,7 +35,7 @@ const TipTapEditor: FC<ITipTapEditor> = (props): JSX.Element => {
 			}}),
 		],
 		editorProps: {
-			//* used to change selected text
+			//* used to change selected text, handleClick just take inside selectionRange and didnt do anything, but useEffect below do job 
 			handleClick(view, position, event) {
 				const { state } = view
 				const selectionRange = getMarkRange(
@@ -62,7 +62,10 @@ const TipTapEditor: FC<ITipTapEditor> = (props): JSX.Element => {
 		<div className='p-3 dark:bg-primary-dark bg-primary transition'>
 			<ToolBar editor={editor} onOpenImageClick={()=>setShowGallery(true)}/>
 			<div className=' h-[1px] w-full dark:bg-secondary-light bg-secondary-light my-3' />
+			{/* for Bubble menu */}
 			{editor ? <EditLink editor={editor} /> : null}
+			{/* --------------------------- */}
+
 			<EditorContent editor={editor} />
 		</div>
 		<GalleryModal visible={showGallery} onClose={()=>setShowGallery(false)}/>

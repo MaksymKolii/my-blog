@@ -9,6 +9,9 @@ interface Props {
 }
 
 const EditLink: FC<Props> = ({ editor }): JSX.Element => {
+
+
+	//* for editing form to show what we already have to change
 	const [showEditForm, setShowEditForm] = useState(false)
 
 	const handleOnLinkOpenClick = useCallback(() => {
@@ -55,6 +58,7 @@ const EditLink: FC<Props> = ({ editor }): JSX.Element => {
 			<LinkForm
 				visible={showEditForm}
 				onSubmit={handleSubmit}
+				//* we need to grab values so we create a method getInitialState
 				initialState={getInitialState()}
 			/>
 			{!showEditForm && (

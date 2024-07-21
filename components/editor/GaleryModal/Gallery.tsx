@@ -1,7 +1,6 @@
 import { FC } from 'react'
-import Image from './Image'
+import ImageG from './Image'
 import { BsCardImage } from 'react-icons/bs'
-
 interface IGallery {
 	images: {
 		src: string
@@ -10,8 +9,6 @@ interface IGallery {
 	uploading?: boolean
 	selectedImage?: string
 }
-
-
 
 const Gallery: FC<IGallery> = ({
 	images,
@@ -31,11 +28,12 @@ const Gallery: FC<IGallery> = ({
 				images.map(({ src }, idx) => {
 					return (
 						<div key={idx} className='basis-1/4 p-1'>
-							<Image
+							<ImageG
 								src={src}
 								onClick={()=>onSelect(src)}
 								selected={selectedImage===src}
-							></Image>
+							
+							></ImageG>
 						</div>
 					)
 				})}

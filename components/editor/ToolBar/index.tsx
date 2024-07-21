@@ -17,7 +17,7 @@ import {
 	BsBraces,
 } from 'react-icons/bs'
 import InsertLink from '../Link/InsertLink'
-import { LinkOption } from '../Link/LinkForm'
+import { type LinkOption } from '../Link/LinkForm'
 import EmbedYoutube from './EmbedYoutube'
 
 interface IToolBar {
@@ -150,6 +150,7 @@ const ToolBar: FC<IToolBar> = ({ editor,onOpenImageClick }): JSX.Element | null 
 					<BsBraces />
 				</Button>
 				<InsertLink onSubmit={handleLinkSubmit} />
+				
 				<Button
 					active={editor.isActive('orderedList')}
 					onClick={() => {

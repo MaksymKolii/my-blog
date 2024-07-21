@@ -31,7 +31,7 @@ const ModalContainer: FC<Props> = ({
 //* For closing this div(blur) by Escape
 	useEffect(() => {
 		const closeModal = (ev: any) => {
-			console.log(ev);
+			// console.log(ev);
 			ev.key === 'Escape' && handleClose()
 		}
 		document.addEventListener('keydown', closeModal)

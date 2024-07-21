@@ -10,6 +10,7 @@ interface IInsertLink {
 }
 
 const InsertLink: FC<IInsertLink> = ({onSubmit}): JSX.Element => {
+    //* 1
     const [visible, setVisible] = useState(false)
 
     const handleSubmit =(link:LinkOption)=>{
@@ -24,6 +25,7 @@ const InsertLink: FC<IInsertLink> = ({onSubmit}): JSX.Element => {
 	return (
 		<div onKeyDown={({key})=>{
             if(key === 'Escape') hideForm()
+          
             // console.log(key)
         }}
         className='relative'>

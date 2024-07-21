@@ -2,9 +2,11 @@ import ModalContainer, {
 	ModalContainerProps,
 } from '@/components/common/ModalContainer'
 import { FC, useState } from 'react'
-import NextImageMine from 'next/image'
+import Image from 'next/image'
 import Gallery from './Gallery'
 import { BsCardImage } from 'react-icons/bs'
+import ActionButton from '@/components/common/ActionButton'
+import { AiOutlineCloudUpload } from 'react-icons/ai'
 
 interface IGalleryModal extends ModalContainerProps {}
 
@@ -89,40 +91,61 @@ const GalleryModal: FC<IGalleryModal> = ({ visible, onClose }): JSX.Element => {
 	return (
 		<ModalContainer visible={visible} onClose={onClose}>
 			<div className='max-w-4xl p-2 bg-primary-dark dark:bg-primary rounded'>
-				<div className='flex'>
+				<div className='flex space-x-2'>
 					{/* Gallery */}
 					<div className='basis-[75%] max-h-[450px] overflow-y-auto custom-scroll-bar'>
 						{/* передаем src из Gallery.tsx -( onSelect(src)) который находим пр срабатывании onClick на div-е в  Image.tsx. */}
 						<Gallery
 							images={images}
+							// uploading={true}
 							onSelect={src => setSelectedImage(src)}
 							selectedImage={selectedImage}
 						/>
 					</div>
 
 					{/* Image selection and upload */}
-					<div className='basis-1/4'>
-						{selectedImage ? (
-							<>
-								{' '}
-								<textarea
-									className='w-full resize-none rounded bg-transparent border-2 border-secondary-dark dark:focus:border-primary transition  text-primary dark:text-primary-dark px-1 h-32'
-									placeholder='alt text'
-								></textarea>
-								<div className='relative aspect-video bg-png-pattern'>
-									<NextImageMine
-										src={selectedImage}
-										layout='fill'
-										alt='gallery'
-										objectFit='contain'
-									/>
-								</div>
-							</>
-						) :
-						//  null
-						<div className='basis-1/4 p-1 aspect-square flex flex-col items-center justify-center bg-secondary-light text-primary-dark rounded animate-pulse'>
-						<BsCardImage size={60} /><p>Select image</p>
-					</div>}
+					<div className='basis-1/4 '>
+						<div className='space-y-4'>
+							<div>
+								<input hidden type='file' id='image-input' />
+								<label htmlFor='image-input'>
+									<div className='w-full border border-action text-action flex items-center justify-center space-x-2 p-2 cursor-pointer rounded'>
+										<AiOutlineCloudUpload />
+										<span className='px-2'>Upload image</span>
+									</div>
+								</label>
+							</div>
+							{
+								selectedImage ? (
+									<>
+									
+										<textarea
+											className='w-full focus:outline-none  resize-none rounded bg-transparent border-2 focus:ring-1 border-secondary-dark text-primary dark:text-primary-dark px-1 h-32'
+											placeholder='alt text'
+										></textarea>
+										<ActionButton title='Select' 
+										// busy={true} 
+										/>
+
+										{/* Configure bg Image in tailwind.config    backgroundImage: {
+      "png-pattern":"url('/empty-bg.jpg')",
+   
+    }, & now use like Background */}
+										<div className='relative aspect-video bg-png-pattern'>
+											<Image
+												src={selectedImage}
+												layout='fill'
+												alt='gallery'
+												style={{ objectFit: 'contain' }}
+											/>
+										</div>
+									</>
+								) : null
+								// 	<div className='basis-1/4 p-1 aspect-square flex flex-col items-center justify-center bg-secondary-light text-primary-dark rounded animate-pulse'>
+								// 	<BsCardImage size={60} /><p>Select image</p>
+								// </div>
+							}
+						</div>
 					</div>
 				</div>
 			</div>
