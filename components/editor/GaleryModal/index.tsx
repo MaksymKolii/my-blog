@@ -1,14 +1,21 @@
 import ModalContainer, {
 	ModalContainerProps,
 } from '@/components/common/ModalContainer'
-import { FC, useState } from 'react'
+import { ChangeEventHandler, FC, useCallback, useState } from 'react'
 import Image from 'next/image'
 import Gallery from './Gallery'
 import { BsCardImage } from 'react-icons/bs'
 import ActionButton from '@/components/common/ActionButton'
 import { AiOutlineCloudUpload } from 'react-icons/ai'
 
-interface IGalleryModal extends ModalContainerProps {}
+export interface ImageSelectionResult {
+	src: string
+	altTextInterface: string
+}
+interface IGalleryModal extends ModalContainerProps {
+	onFileSelect(image: File): void
+	onSelect(result: ImageSelectionResult): void
+}
 
 const images = [
 	{
@@ -85,8 +92,35 @@ const images = [
 	},
 ]
 
-const GalleryModal: FC<IGalleryModal> = ({ visible, onClose }): JSX.Element => {
+const GalleryModal: FC<IGalleryModal> = ({
+	visible,
+	onFileSelect,
+	onSelect,
+	onClose,
+}): JSX.Element => {
 	const [selectedImage, setSelectedImage] = useState('')
+	const [altText, setAltText] = useState('')
+
+	const handleCloseImage = useCallback(() => onClose && onClose(), [onClose])
+
+	const handleOnImageChange: ChangeEventHandler<HTMLInputElement> = ({
+		target,
+	}) => {
+		const { files } = target
+		if (!files) return
+		const file = files[0]
+		// console.log("files",files);
+	
+		if (!file.type.startsWith('image')) return handleCloseImage()
+			// console.log(file);
+			onFileSelect(file)
+	}
+
+	const handleSelection = () => {
+		if (!selectedImage) return handleCloseImage()
+		onSelect({ src: selectedImage, altTextInterface: altText })
+		handleCloseImage()
+	}
 
 	return (
 		<ModalContainer visible={visible} onClose={onClose}>
@@ -107,7 +141,12 @@ const GalleryModal: FC<IGalleryModal> = ({ visible, onClose }): JSX.Element => {
 					<div className='basis-1/4 '>
 						<div className='space-y-4'>
 							<div>
-								<input hidden type='file' id='image-input' />
+								<input
+									onChange={handleOnImageChange}
+									hidden
+									type='file'
+									id='image-input'
+								/>
 								<label htmlFor='image-input'>
 									<div className='w-full border border-action text-action flex items-center justify-center space-x-2 p-2 cursor-pointer rounded'>
 										<AiOutlineCloudUpload />
@@ -118,13 +157,16 @@ const GalleryModal: FC<IGalleryModal> = ({ visible, onClose }): JSX.Element => {
 							{
 								selectedImage ? (
 									<>
-									
 										<textarea
 											className='w-full focus:outline-none  resize-none rounded bg-transparent border-2 focus:ring-1 border-secondary-dark text-primary dark:text-primary-dark px-1 h-32'
 											placeholder='alt text'
+											value={altText}
+											onChange={({ target }) => setAltText(target.value)}
 										></textarea>
-										<ActionButton title='Select' 
-										// busy={true} 
+										<ActionButton
+											onClick={handleSelection}
+											title='Select'
+											// busy={true}
 										/>
 
 										{/* Configure bg Image in tailwind.config    backgroundImage: {
@@ -136,7 +178,8 @@ const GalleryModal: FC<IGalleryModal> = ({ visible, onClose }): JSX.Element => {
 												src={selectedImage}
 												layout='fill'
 												alt='gallery'
-												style={{ objectFit: 'contain' }}
+												objectFit='contain'
+												// style={{ objectFit: 'contain' }}
 											/>
 										</div>
 									</>

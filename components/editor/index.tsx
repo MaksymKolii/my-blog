@@ -4,16 +4,16 @@ import Underline from '@tiptap/extension-underline'
 import Placeholder from '@tiptap/extension-placeholder'
 import Link from '@tiptap/extension-link'
 import Youtube from '@tiptap/extension-youtube'
+import TipTapImage from '@tiptap/extension-image'
 
 import { FC, useEffect, useState } from 'react'
 import ToolBar from './ToolBar'
 import EditLink from './Link/EditLink'
-import GalleryModal from './GaleryModal'
+import GalleryModal, { ImageSelectionResult } from './GaleryModal'
 
 interface ITipTapEditor {}
 
 const TipTapEditor: FC<ITipTapEditor> = (props): JSX.Element => {
-
 	const [selectionRange, setSelectionRange] = useState<Range>()
 	const [showGallery, setShowGallery] = useState(false)
 
@@ -30,12 +30,17 @@ const TipTapEditor: FC<ITipTapEditor> = (props): JSX.Element => {
 					target: '',
 				},
 			}),
-			Youtube.configure({width:840,height:472.5,HTMLAttributes:{
-				class:"mx-auto rounded",
-			}}),
+			Youtube.configure({
+				width: 840,
+				height: 472.5,
+				HTMLAttributes: {
+					class: 'mx-auto rounded',
+				},
+			}),
+			TipTapImage.configure({ HTMLAttributes: { class: 'mx-auto' } }),
 		],
 		editorProps: {
-			//* used to change selected text, handleClick just take inside selectionRange and didnt do anything, but useEffect below do job 
+			//* used to change selected text, handleClick just take inside selectionRange and didnt do anything, but useEffect below do job
 			handleClick(view, position, event) {
 				const { state } = view
 				const selectionRange = getMarkRange(
@@ -52,6 +57,18 @@ const TipTapEditor: FC<ITipTapEditor> = (props): JSX.Element => {
 		},
 		// content: '<p>Start write here!  🌎️</p>',
 	})
+
+	const handleImageSelection = (res: ImageSelectionResult) => {
+		editor
+			?.chain()
+			.focus()
+			.setImage({ src: res.src, alt: res.altTextInterface })
+			.run()
+
+         // work
+		// setShowGallery(false)
+	}
+
 	useEffect(() => {
 		if (editor && selectionRange) {
 			editor.commands.setTextSelection(selectionRange)
@@ -59,16 +76,26 @@ const TipTapEditor: FC<ITipTapEditor> = (props): JSX.Element => {
 	}, [editor, selectionRange])
 	return (
 		<>
-		<div className='p-3 dark:bg-primary-dark bg-primary transition'>
-			<ToolBar editor={editor} onOpenImageClick={()=>setShowGallery(true)}/>
-			<div className=' h-[1px] w-full dark:bg-secondary-light bg-secondary-light my-3' />
-			{/* for Bubble menu */}
-			{editor ? <EditLink editor={editor} /> : null}
-			{/* --------------------------- */}
+			<div className='p-3 dark:bg-primary-dark bg-primary transition'>
+				<ToolBar
+					editor={editor}
+					onOpenImageClick={() => setShowGallery(true)}
+				/>
+				<div className=' h-[1px] w-full dark:bg-secondary-light bg-secondary-light my-3' />
+				{/* for Bubble menu */}
+				{editor ? <EditLink editor={editor} /> : null}
+				{/* --------------------------- */}
 
-			<EditorContent editor={editor} />
-		</div>
-		<GalleryModal visible={showGallery} onClose={()=>setShowGallery(false)}/>
+				<EditorContent editor={editor} />
+			</div>
+			<GalleryModal
+				// upload logic
+				onFileSelect={() => {}}
+				// onSelect={(res)=>console.log(res)}
+				onSelect={handleImageSelection}
+				visible={showGallery}
+				onClose={() => setShowGallery(false)}
+			/>
 		</>
 	)
 }

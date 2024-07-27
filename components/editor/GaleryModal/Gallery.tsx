@@ -4,8 +4,8 @@ import { BsCardImage } from 'react-icons/bs'
 interface IGallery {
 	images: {
 		src: string
-	}[]
-	onSelect(srcOnSelect: string): void
+	}[];
+	onSelect(src: string): void
 	uploading?: boolean
 	selectedImage?: string
 }
