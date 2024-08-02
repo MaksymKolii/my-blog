@@ -10,12 +10,46 @@ import { FC, useEffect, useState } from 'react'
 import ToolBar from './ToolBar'
 import EditLink from './Link/EditLink'
 import GalleryModal, { ImageSelectionResult } from './GaleryModal'
+import axios from 'axios'
 
 interface ITipTapEditor {}
 
 const TipTapEditor: FC<ITipTapEditor> = (props): JSX.Element => {
 	const [selectionRange, setSelectionRange] = useState<Range>()
 	const [showGallery, setShowGallery] = useState(false)
+	const [uploading, setUploading] = useState(false)
+	const [images, setImages] = useState<{src:string}[]>([])
+
+	const  fetchImages = async ()=>{
+		const {data}= await axios('/api/image')
+		setImages(data.images)
+	}
+	const  handleImageUpload = async (image: File)=>{
+		try {
+			setUploading(true);
+		
+			const formData = new FormData();
+			formData.append('image', image);
+			const { data } = await axios.post('/api/image', formData);
+			console.log(data);
+			setUploading(false);
+			setImages([data, ...images]);
+		  } catch (error: any) {
+			setUploading(false);
+			console.error('Image upload failed:', error);
+			alert('Image upload failed. Please try again.');
+		  }
+		// setUploading(true)
+
+		// const formData =new FormData()
+		// formData.append('image', image)
+		// const {data}= await axios.post('/api/image', formData)
+		// setUploading(false)
+		// setImages([data, ...images]);
+
+		// // console.log(data);
+		
+	}
 
 	const editor = useEditor({
 		extensions: [
@@ -69,11 +103,17 @@ const TipTapEditor: FC<ITipTapEditor> = (props): JSX.Element => {
 		// setShowGallery(false)
 	}
 
+	
+
 	useEffect(() => {
 		if (editor && selectionRange) {
 			editor.commands.setTextSelection(selectionRange)
 		}
 	}, [editor, selectionRange])
+
+	useEffect(()=>{
+		fetchImages()
+	},[])
 	return (
 		<>
 			<div className='p-3 dark:bg-primary-dark bg-primary transition'>
@@ -89,12 +129,13 @@ const TipTapEditor: FC<ITipTapEditor> = (props): JSX.Element => {
 				<EditorContent editor={editor} />
 			</div>
 			<GalleryModal
-				// upload logic
-				onFileSelect={() => {}}
-				// onSelect={(res)=>console.log(res)}
-				onSelect={handleImageSelection}
+				 uploading={uploading}
+			images={images}
 				visible={showGallery}
 				onClose={() => setShowGallery(false)}
+				onSelect={handleImageSelection}
+
+				onFileSelect={handleImageUpload}
 			/>
 		</>
 	)
