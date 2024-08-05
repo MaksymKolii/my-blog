@@ -7,7 +7,7 @@ interface FormidablePromise {
 }
 
 export const readFile = (req: NextApiRequest): Promise<FormidablePromise> => {
-  const form = formidable();
+  const form = formidable({ multiples: true });
   return new Promise((resolve, reject) => {
     form.parse(req, (err, fields, files) => {
       if (err) reject(err);
