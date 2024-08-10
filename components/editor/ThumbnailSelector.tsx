@@ -13,7 +13,9 @@ const ThumbnailSelector: FC<Props> = ({
   initialValue,
   onChange,
 }): JSX.Element => {
+
   const [selectedThumbnail, setSelectedThumbnail] = useState("");
+  
   const handleChange: ChangeEventHandler<HTMLInputElement> = ({ target }) => {
     const { files } = target;
     if (!files) return;

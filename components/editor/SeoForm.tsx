@@ -8,7 +8,7 @@ export interface SeoResult {
   tags: string;
 }
 
-interface Props {
+interface ISeoForm {
   initialValue?: SeoResult;
   title?: string;
   onChange(result: SeoResult): void;
@@ -17,7 +17,7 @@ interface Props {
 const commonInput =
   "w-full bg-transparent outline-none border-2 border-secondary-dark focus:border-primary-dark focus:dark:border-primary rounded transition text-primary-dark dark:text-primary p-2";
 
-const SEOForm: FC<Props> = ({
+const SEOForm: FC<ISeoForm> = ({
   initialValue,
   title = "",
   onChange,
