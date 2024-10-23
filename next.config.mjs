@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+
+  // experimental: {
+  //   reactRefresh: false,  // Отключаем Fast Refresh
+  // },
   images: {
     //* work but warning
     //  domains:["images.unsplash.com", "res.cloudinary.com"],
