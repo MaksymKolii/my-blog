@@ -1,14 +1,28 @@
-import TipTapEditor from '@/components/editor'
+import TipTapEditor, { FinalPost } from '@/components/editor'
 import AdminLayout from '@/components/layout/AdminLayout'
 import { NextPage } from 'next'
 
 interface ICreate {}
 
 const Create: NextPage<ICreate> = () => {
+
+	const handleSubmit = (post:FinalPost)=>{
+
+
+		// we have to generate Form Data }; 
+		const formData =new FormData()
+		formData.append('thumbnail',post.thumbnail)
+
+
+		// submit your post
+
+
+	}
+
 	return (
 		<AdminLayout title='New Post'>
 			<div className='max-w-4xl mx-auto'>
-				<TipTapEditor  onSubmit={uu => console.log('uu', uu)} />
+				<TipTapEditor  onSubmit={handleSubmit} />
 				{/* <TipTapEditor  onSubmit={uu => console.log('uu', uu)} 
 					initialValue={{
 						title:"This is from Create",
