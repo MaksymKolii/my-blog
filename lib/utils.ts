@@ -8,7 +8,8 @@ interface FormidablePromise {
 
 export const readFile = (req: NextApiRequest): Promise<FormidablePromise> => {
   //* formidable по умолчанию обрабатывает все поля как массивы.
-  const form = formidable({ multiples: true });
+  // const form = formidable({ multiples: true });
+  const form = formidable();
 
   return new Promise((resolve, reject) => {
     form.parse(req, (err, fields, files) => {
