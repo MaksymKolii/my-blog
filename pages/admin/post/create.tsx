@@ -1,28 +1,44 @@
 import TipTapEditor, { FinalPost } from '@/components/editor'
 import AdminLayout from '@/components/layout/AdminLayout'
+import axios from 'axios'
 import { NextPage } from 'next'
 
 interface ICreate {}
 
 const Create: NextPage<ICreate> = () => {
+	const handleSubmit = async (post: FinalPost) => {
+		// we have to generate Form Data };
+		try {
+			const formData = new FormData()
 
-	const handleSubmit = (post:FinalPost)=>{
-
-
-		// we have to generate Form Data }; 
-		const formData =new FormData()
-		formData.append('thumbnail',post.thumbnail)
-
-
-		// submit your post
-
-
+			for (let key in post) {
+				let value = (post as any)[key]
+				if (key === 'tags') {
+					// Преобразуем строку tags в массив строк, обрезаем пробелы и фильтруем пустые строки
+					const tags = value
+						.split(',')
+						.map((tag: string) => tag.trim())
+						.filter((tag: string) => tag !== '')
+					formData.append('tags', JSON.stringify(tags))
+				} else {
+					// Для остальных полей добавляем их как есть
+					formData.append(key, value)
+				}
+			}
+			// submit your post
+			// Здесь будет вызов для отправки данных на сервер, например:
+			const { data } = await axios.post('/api/posts', formData)
+			console.log('!!! data !!!', data)
+			console.log('!!! formData !!!', formData)
+		} catch (error: any) {
+			console.log(error.response.data)
+		}
 	}
 
 	return (
 		<AdminLayout title='New Post'>
 			<div className='max-w-4xl mx-auto'>
-				<TipTapEditor  onSubmit={handleSubmit} />
+				<TipTapEditor onSubmit={handleSubmit} />
 				{/* <TipTapEditor  onSubmit={uu => console.log('uu', uu)} 
 					initialValue={{
 						title:"This is from Create",
