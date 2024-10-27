@@ -31,7 +31,7 @@ const AdminLayout: FC<IAdminLayout> = ({title, children }): JSX.Element => {
 				<div className='flex-1 p-4'>{children}</div>
 				{/* Create button */}
 				<Link
-					href='/admin/post/create'
+					href='/admin/posts/create'
 					className='bg-secondary-dark dark:bg-secondary-light text-primary dark:text-primary-dark fixed z-50 right-10 bottom-10 p-3 rounded-full hover:scale-90 shadow-sm transition'
 				>
 					<MdPostAdd size={24} />

@@ -30,7 +30,6 @@ const Create: NextPage<ICreate> = () => {
 			// Здесь будет вызов для отправки данных на сервер, например:
 			const { data } = await axios.post('/api/posts', formData)
 			console.log('!!! data !!!', data)
-			
 		} catch (error: any) {
 			console.log(error.response.data)
 		}

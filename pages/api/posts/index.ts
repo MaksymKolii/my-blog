@@ -6,8 +6,6 @@ import { readFile } from '@/lib/utils'
 import Post from '@/models/post'
 import formidable from 'formidable'
 import cloudinary from '@/lib/cloudinary'
-import { url } from 'inspector'
-
 //* убирает 404 {error: 'value must be of type object'}
 export const config = {
 	api: { bodyParser: false },
@@ -57,7 +55,7 @@ const createNewPost: NextApiHandler = async (req, res) => {
 		tags,
 	})
 
-	console.log('Body', transformedBody)
+	// console.log('Body', transformedBody)
 	// * --------------------------------------------------------------------------
 	//* старый вариант not work because formData return obj with arrays inside
 
