@@ -3,6 +3,10 @@ import { postValidationSchema } from '@/lib/validator'
 import { NextApiHandler } from 'next'
 import { validateSchema } from '@/lib/validator'
 import { readFile } from '@/lib/utils'
+import Post from '@/models/post'
+import formidable from 'formidable'
+import cloudinary from '@/lib/cloudinary'
+import { url } from 'inspector'
 
 //* убирает 404 {error: 'value must be of type object'}
 export const config = {
@@ -69,6 +73,33 @@ const createNewPost: NextApiHandler = async (req, res) => {
 		})
 
 	// Валидация пройдена, можно продолжить обработку запроса
-	res.json({ success: true })
+
+	const { title, slug, content, meta } = transformedBody
+
+	await dbConnect()
+	const alreadyExists = await Post.findOne({ slug: transformedBody.slug }) // Post.findOne({slug })
+	if (alreadyExists)
+		return res.status(400).json({ error: 'Slug need to be unique!' })
+
+	// create new post
+	const newPost = new Post({ title, slug, content, meta, tags })
+
+	// uploading thumbnail if there is any
+	const thumbnail = files.thumbnail as formidable.File[]
+
+	if (thumbnail && thumbnail.length > 0) {
+		const { secure_url: url, public_id } = await cloudinary.uploader.upload(
+			thumbnail[0].filepath,
+			{
+				folder: 'dev-blogs',
+			}
+		)
+		 newPost.thumbnail = { url, public_id }
+		
+	}
+
+	await newPost.save()
+
+	res.json({ post: newPost })
 }
 export default handler

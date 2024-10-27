@@ -1,8 +1,18 @@
-import { Schema, model, models } from 'mongoose'
+import { Model, ObjectId, Schema, model, models } from 'mongoose'
 
 // Title, content, slug, tags, thumbnail, meta, author, date
+interface PostModelSchema {
+	title: string
+	slug: string
+	content: string
+	tags: string[]
+	thumbnail: { url: string; public_id: string }
+	meta: string
+	author: ObjectId
+	createdAt: Date
+}
 
-const PostSchema = new Schema(
+const PostSchema = new Schema<PostModelSchema>(
 	{
 		title: {
 			type: String,
@@ -42,5 +52,6 @@ const PostSchema = new Schema(
 )
 const Post = models?.Post || model('Post', PostSchema)
 
- //// eslint-disable-next-line import/no-anonymous-default-export
-export default Post
+//// eslint-disable-next-line import/no-anonymous-default-export
+//* add as Model<PostModelSchema> to work with interface !!
+export default Post as Model<PostModelSchema>

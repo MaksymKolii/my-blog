@@ -13,6 +13,7 @@ const Create: NextPage<ICreate> = () => {
 
 			for (let key in post) {
 				let value = (post as any)[key]
+				//? was key === 'tags' && value.trim() without filter
 				if (key === 'tags') {
 					// Преобразуем строку tags в массив строк, обрезаем пробелы и фильтруем пустые строки
 					const tags = value
@@ -29,7 +30,7 @@ const Create: NextPage<ICreate> = () => {
 			// Здесь будет вызов для отправки данных на сервер, например:
 			const { data } = await axios.post('/api/posts', formData)
 			console.log('!!! data !!!', data)
-			console.log('!!! formData !!!', formData)
+			
 		} catch (error: any) {
 			console.log(error.response.data)
 		}
