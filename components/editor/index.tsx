@@ -22,6 +22,7 @@ import ThumbnailSelector from './ThumbnailSelector'
 import ActionButton from '../common/ActionButton'
 
 export interface FinalPost extends SeoResult {
+	id?:string
 	title: string
 	content: string
 	thumbnail?: File | string

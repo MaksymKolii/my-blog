@@ -1,5 +1,6 @@
 import TipTapEditor, { FinalPost } from '@/components/editor'
 import AdminLayout from '@/components/layout/AdminLayout'
+import { generateFormData } from '@/utils/helper'
 import axios from 'axios'
 import { NextPage } from 'next'
 
@@ -7,29 +8,30 @@ interface ICreate {}
 
 const Create: NextPage<ICreate> = () => {
 	const handleSubmit = async (post: FinalPost) => {
-		// we have to generate Form Data };
+		
 		try {
-			const formData = new FormData()
+			// we have to generate Form Data };
+			const formData = generateFormData(post)
 
-			for (let key in post) {
-				let value = (post as any)[key]
-				//? was key === 'tags' && value.trim() without filter
-				if (key === 'tags') {
-					// Преобразуем строку tags в массив строк, обрезаем пробелы и фильтруем пустые строки
-					const tags = value
-						.split(',')
-						.map((tag: string) => tag.trim())
-						.filter((tag: string) => tag !== '')
-					formData.append('tags', JSON.stringify(tags))
-				} else {
-					// Для остальных полей добавляем их как есть
-					formData.append(key, value)
-				}
-			}
+			// for (let key in post) {
+			// 	let value = (post as any)[key]
+			// 	//? was key === 'tags' && value.trim() without filter
+			// 	if (key === 'tags') {
+			// 		// Преобразуем строку tags в массив строк, обрезаем пробелы и фильтруем пустые строки
+			// 		const tags = value
+			// 			.split(',')
+			// 			.map((tag: string) => tag.trim())
+			// 			.filter((tag: string) => tag !== '')
+			// 		formData.append('tags', JSON.stringify(tags))
+			// 	} else {
+			// 		// Для остальных полей добавляем их как есть
+			// 		formData.append(key, value)
+			// 	}
+			// }
 			// submit your post
 			// Здесь будет вызов для отправки данных на сервер, например:
 			const { data } = await axios.post('/api/posts', formData)
-			console.log('!!! data !!!', data)
+			console.log('!!! Created data !!!', data)
 		} catch (error: any) {
 			console.log(error.response.data)
 		}
