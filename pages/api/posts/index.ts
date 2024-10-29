@@ -6,6 +6,8 @@ import { readFile } from '@/lib/utils'
 import Post from '@/models/post'
 import formidable from 'formidable'
 import cloudinary from '@/lib/cloudinary'
+import { IncomingPost } from './[postId]'
+
 //* убирает 404 {error: 'value must be of type object'}
 export const config = {
 	api: { bodyParser: false },
@@ -25,14 +27,14 @@ const handler: NextApiHandler = async (req, res) => {
 
 const createNewPost: NextApiHandler = async (req, res) => {
 	//* work because formData return obj with arrays inside we need to Преобразуем значения полей в строки, если они массивы
-	const { files, body } = await readFile(req)
+	const { files, body } = await readFile<IncomingPost>(req)
 
 	// Создаем новый объект для преобразования типов
 	const transformedBody: Record<string, string | undefined> = {}
 	// * 1 ------------  Преобразуем значения полей в строки, если они массивы-------------
 	//*  Этот код проверяет каждое значение в body, и если значение является массивом, он берет первый элемент. Он будет преобразовывать все значения в transformedBody, даже если это не массивы. Это более универсальный подход, так как он охватывает все случаи, включая строки и другие типы данных.
 	for (const key in body) {
-		const value = body[key]
+		const value = body[key as keyof IncomingPost]
 		transformedBody[key] = Array.isArray(value) ? value[0] : value // Если значение - массив, берем первый элемент
 	}
 	//*2 Этот код только проверяет, является ли значение массивом, и обрабатывает только такие значения. Если значение не является массивом, оно игнорируется в transformedBody. Этот подход может быть полезен, если вы точно знаете, что вам нужно работать только с массивами, и хотите избегать ненужного преобразования.
