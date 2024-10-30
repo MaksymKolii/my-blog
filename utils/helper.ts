@@ -1,9 +1,7 @@
 import { FinalPost } from '@/components/editor'
 
-export const generateFormData = (post:FinalPost) => {
-    
-
-  const formData = new FormData()
+export const generateFormData = (post: FinalPost) => {
+	const formData = new FormData()
 	for (let key in post) {
 		let value = (post as any)[key]
 		if (key === 'tags') {
@@ -17,5 +15,5 @@ export const generateFormData = (post:FinalPost) => {
 			formData.append(key, value)
 		}
 	}
-return formData
+	return formData
 }
