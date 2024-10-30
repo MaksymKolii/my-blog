@@ -2,14 +2,15 @@ import { PostDetail } from '@/utils/types'
 import Image from 'next/image'
 import { FC } from 'react'
 import dateFormat, { masks } from 'dateformat'
+import Link from 'next/link'
 
 interface IPostCard {
 	post: PostDetail
 }
 
-const trimText = (text: string, trimBy: number):string => {
-    if (text.length <= trimBy) return text
-  return text.substring(0,trimBy).trim() + "..."
+const trimText = (text: string, trimBy: number): string => {
+	if (text.length <= trimBy) return text
+	return text.substring(0, trimBy).trim() + '...'
 }
 
 const PostCard: FC<IPostCard> = ({ post }): JSX.Element => {
@@ -37,31 +38,51 @@ const PostCard: FC<IPostCard> = ({ post }): JSX.Element => {
 
 			{/* // * Post Info  */}
 			<div className='p-2 flex-1 flex flex-col '>
-				<div className='flex items-center justify-between text-sm text-primary-dark dark:text-primary mb-1'>
-					<span>{formattedDate}</span>
-					<p>Tags:</p>
-				</div>
-				<div className='flex items-center justify-between text-sm text-primary-dark dark:text-primary mb-3'>
-					<div className='flex  space-x-1'>
-						{tags &&
-							tags.map((t, indx) => (
+				<Link href={'/' + slug}>
+					<div className='flex items-center justify-between text-sm text-primary-dark dark:text-primary mb-1'>
+						<span>{formattedDate}</span>
+						<p>Tags:</p>
+					</div>
+
+					{/* Tags Display */}
+					<div className='text-sm text-primary-dark dark:text-primary mb-3'>
+						{/* First Row of Tags (up to 3) */}
+						<div className='flex space-x-1'>
+							{tags.slice(0, 3).map((t, indx) => (
 								<span
-									className='bg-secondary-dark rounded-s-sm p-1'
-									key={t + indx}
+									className='bg-secondary-dark rounded px-1 '
+									key={`tag-${slug}-${t}-${indx}`}
 								>
 									{indx === 0 ? `#${t}` : t}
-									{indx < tags.length - 1 && ', '}{' '}
 								</span>
 							))}
+						</div>
+
+						{/* Second Row of Tags (from 4th tag onward) */}
+						{tags.length > 3 && (
+							<div className='flex mt-2 space-x-1'>
+								{tags.slice(3).map((t, indx) => (
+									<span
+										className='bg-secondary-dark rounded p-1 '
+										key={`post-${post.slug}-${indx}`}
+									>
+										{t}
+									</span>
+								))}
+							</div>
+						)}
 					</div>
-				</div>
-				{/* </div> */}
-				<h1 className='font-semibold text-primary-dark dark:text-primary mb-2'>
-					{trimText(title, 45)}
-				</h1>
-				<p className=' text-secondary-dark'>{trimText(meta, 68)}</p>
+
+					<h1 className='font-semibold text-primary-dark dark:text-primary mb-2'>
+						{trimText(title, 45)}
+					</h1>
+					<p className=' text-secondary-dark'>{trimText(meta, 68)}</p>
+				</Link>
 				<div className='flex justify-end items-center space-x-4 mt-auto h-8 text-primary-dark dark:text-primary'>
-					<button className='hover:underline'>Edit</button>
+					<Link className='hover:underline' href={'admin/posts/update/' + slug}>
+						Update
+					</Link>
+					{/* <button className='hover:underline'>Edit</button> */}
 					<button className='hover:underline'>Delete</button>
 				</div>
 			</div>

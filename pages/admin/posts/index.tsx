@@ -2,7 +2,7 @@ import PostCard from '@/components/common/PostCard'
 import AdminLayout from '@/components/layout/AdminLayout'
 import { NextPage } from 'next'
 import { useState } from 'react'
-
+import { nanoid } from 'nanoid'
 interface IAdmin {}
 
 const posts = [
@@ -37,7 +37,7 @@ const posts = [
 		title: 'How Long to practice your coding skills and practice practice practice ',
 		slug: 'how-to-practice-your-coding-skills',
 		meta: 'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making',
-		tags: ['programming', 'Type Script', 'Next JS'],
+		tags: ['programming', 'Type Script', 'Next JS','Redux', "MySQL"],
 		thumbnail:
 			'https://images.pexels.com/photos/9503686/pexels-photo-9503686.jpeg? auto-compress&cs=tinysrgb&dpr=1&w=500',
 		createdAt: 'Tue Oct 11 2022 14:58:49 GMT+0530 (India Standard Time)',
@@ -78,7 +78,8 @@ const Posts: NextPage<IAdmin> = () => {
 			<div className='max-w-4xl mx-auto p-3'>
 				<div className='grid grid-cols-3 gap-4'>
 					{postsToRender.map(post => (
-						<PostCard key={post.slug} post={post} />
+							<PostCard key={nanoid()} post={post} />
+					
 					))}
 				</div>
 			</div>
