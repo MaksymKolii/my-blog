@@ -7,7 +7,7 @@ const nextConfig = {
   // },
   images: {
     //* work but warning
-    //  domains:["images.unsplash.com", "res.cloudinary.com"],
+     domains:["images.unsplash.com", "res.cloudinary.com", "images.pexels.com",],
     remotePatterns:[
     {
       protocol: 'https',
