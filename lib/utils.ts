@@ -4,6 +4,7 @@ import dbConnect from './dbConnect'
 import Post, { PostModelSchema } from '@/models/post'
 import { PostDetail } from '@/utils/types'
 
+
 interface FormidablePromise<T> {
 	files: formidable.Files
 	// body: formidable.Fields;
@@ -26,24 +27,25 @@ export const readFile = <T extends object>(
 	})
 }
 export const readPostsFromDb = async (limit: number, pageNumb: number) => {
+	if (!limit || limit > 10)
+		throw Error('Please USE limit under 10 !! and a valid pageNumb')
 	const skip = limit * pageNumb
 	await dbConnect()
-	const posts =await Post.find()
+	const posts = await Post.find()
 		.sort({ createdAt: 'desc' })
 		.select('-content')
 		.skip(skip)
-    .limit(limit)
-  return posts
+		.limit(limit)
+	return posts
 }
 
-export const formatPosts = (posts: PostModelSchema[]):PostDetail[] => {
-  return posts.map((post) => ({
-    title: post.title,
-    slug: post.slug,
-    createdAt: post.createdAt.toString(),
-    thumbnail: post.thumbnail?.url || "",
-    meta: post.meta,
-    tags:post.tags,
-
-  }))
+export const formatPosts = (posts: PostModelSchema[]): PostDetail[] => {
+	return posts.map(post => ({
+		title: post.title,
+		slug: post.slug,
+		createdAt: post.createdAt.toString(),
+		thumbnail: post.thumbnail?.url || '',
+		meta: post.meta,
+		tags: post.tags,
+	}))
 }

@@ -160,6 +160,7 @@ const TipTapEditor: FC<ITipTapEditor> = ({
 		if (initialValue) {
 			setPost({ ...initialValue })
 			editor?.commands.setContent(initialValue.content)
+			
 
 			const {  meta, tags, slug } = initialValue 
 			setSeoInitialValue({meta, tags, slug})

@@ -8,3 +8,11 @@ export interface PostDetail {
     createdAt: string
     
 }
+
+export interface IncomingPost {
+	title: string
+	content: string
+	slug: string
+	meta: string
+	tags: string
+}

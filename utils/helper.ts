@@ -1,7 +1,11 @@
 import { FinalPost } from '@/components/editor'
 
 export const generateFormData = (post: FinalPost) => {
+	 console.log(' IN helper.ts (post: FinalPost)', post)
 	const formData = new FormData()
+
+
+
 	for (let key in post) {
 		let value = (post as any)[key]
 		if (key === 'tags') {
@@ -11,7 +15,9 @@ export const generateFormData = (post: FinalPost) => {
 				.map((tag: string) => tag.trim())
 				.filter((tag: string) => tag !== '')
 			formData.append('tags', JSON.stringify(tags))
-		} else {
+		}
+	
+		else {
 			formData.append(key, value)
 		}
 	}

@@ -4,6 +4,7 @@ import { GetServerSideProps, InferGetServerSidePropsType, NextPage } from 'next'
 import { useState } from 'react'
 import { nanoid } from 'nanoid'
 import { PostDetail } from '@/utils/types'
+
 import { formatPosts, readPostsFromDb } from '@/lib/utils'
 
 type IPosts = InferGetServerSidePropsType<typeof getServerSideProps>
@@ -74,8 +75,9 @@ type IPosts = InferGetServerSidePropsType<typeof getServerSideProps>
 // 	},
 // ]
 
-let pageNumb = 0
 const limit = 9
+let pageNumb = 0
+
 
 const Posts: NextPage<IPosts> = ({ posts }) => {
 	const [postsToRender, setPostsToRender] = useState(posts)
@@ -98,21 +100,20 @@ interface ServerSideResponse {
 }
 export const getServerSideProps: GetServerSideProps<
 	ServerSideResponse
-	> = async () => {
-		try {
-			// read posts
-			const posts = await readPostsFromDb(limit, pageNumb)
-			const formattedPosts = formatPosts(posts)
-			// format posts
-			return {
-				props: {
-				posts: formattedPosts
-			}}
-		} catch (error) {
-			return {notFound: true}
-		
+> = async () => {
+	try {
+		// read posts
+		const posts = await readPostsFromDb(limit, pageNumb)
+		const formattedPosts = formatPosts(posts)
+		// format posts
+		return {
+			props: {
+				posts: formattedPosts,
+			},
+		}
+	} catch (error) {
+		return { notFound: true }
 	}
-	
 }
 
 export default Posts

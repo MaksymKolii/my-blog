@@ -2,6 +2,7 @@ import cloudinary from '@/lib/cloudinary'
 import { readFile } from '@/lib/utils'
 import { postValidationSchema, validateSchema } from '@/lib/validator'
 import Post from '@/models/post'
+import { IncomingPost } from '@/utils/types'
 import formidable from 'formidable'
 import { NextApiHandler } from 'next'
 
@@ -19,16 +20,10 @@ const handler: NextApiHandler = (req, res) => {
 	}
 }
 
-export interface IncomingPost {
-	title: string
-	content: string
-	slug: string
-	meta: string
-	tags: string
-}
+
 const updatePost: NextApiHandler = async (req, res) => {
 	const postId = req.query.postId as string
-	// await dbConnect()
+
 	const post = await Post.findById(postId)
 	if (!post) return res.status(404).json({ error: 'Post Not Found!' })
 
@@ -55,8 +50,13 @@ const updatePost: NextApiHandler = async (req, res) => {
 	})
 	if (errorMessage)
 		return res.status(400).json({
-			error: errorMessage, // возвращает первое найденное сообщение об ошибке
+			error: errorMessage, 
 		})
+	//*  Без этого tags не будет изменяться при update !!!
+	if (Array.isArray(tags) && tags.length >= 0) {
+		post.tags = tags
+	}
+
 
 	// Валидация пройдена, можно продолжить обработку запроса
 
@@ -86,7 +86,7 @@ const updatePost: NextApiHandler = async (req, res) => {
 		// just upload image and update record inside DB.
 		post.thumbnail = { url, public_id }
 	}
-	
+
 	await post.save()
 	res.json({ post })
 }

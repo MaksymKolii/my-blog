@@ -34,10 +34,12 @@ const PostCard: FC<IPostCard> = ({
 				) : (
 					<Image
 						src={thumbnail}
-						// layout='fill'
+						sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+						
 						width={500}
 						height={300}
 						alt='thumbnail'
+						priority
 					/>
 				)}
 			</div>
@@ -54,7 +56,7 @@ const PostCard: FC<IPostCard> = ({
 					<div className='text-sm text-primary-dark dark:text-primary mb-3'>
 						{/* First Row of Tags (up to 3) */}
 						<div className='flex space-x-1'>
-							{tags.slice(0, 3).map((t, indx) => (
+							{tags.slice(0, 4).map((t, indx) => (
 								<span
 									className='bg-secondary-dark rounded px-1 '
 									key={`tag-${slug}-${t}-${indx}`}
@@ -65,7 +67,7 @@ const PostCard: FC<IPostCard> = ({
 						</div>
 
 						{/* Second Row of Tags (from 4th tag onward) */}
-						{tags.length > 3 && (
+						{tags.length > 4 && (
 							<div className='flex mt-2 space-x-1'>
 								{tags.slice(3).map((t, indx) => (
 									<span
@@ -80,9 +82,9 @@ const PostCard: FC<IPostCard> = ({
 					</div>
 
 					<h1 className='font-semibold text-primary-dark dark:text-primary mb-2'>
-						{trimText(title, 45)}
+						{trimText(title, 50)}
 					</h1>
-					<p className=' text-secondary-dark'>{trimText(meta, 68)}</p>
+					<p className=' text-secondary-dark'>{trimText(meta, 70)}</p>
 				</Link>
 				<div className='flex justify-end items-center space-x-4 mt-auto h-8 text-primary-dark dark:text-primary'>
 					{busy ? (
@@ -92,7 +94,7 @@ const PostCard: FC<IPostCard> = ({
 							{' '}
 							<Link
 								className='hover:underline'
-								href={'admin/posts/update/' + slug}
+								href={'/admin/posts/update/' + slug}
 							>
 								Edit
 							</Link>
@@ -106,5 +108,6 @@ const PostCard: FC<IPostCard> = ({
 		</div>
 	)
 }
+    
 
 export default PostCard

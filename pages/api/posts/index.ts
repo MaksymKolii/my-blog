@@ -2,11 +2,12 @@ import dbConnect from '@/lib/dbConnect'
 import { postValidationSchema } from '@/lib/validator'
 import { NextApiHandler } from 'next'
 import { validateSchema } from '@/lib/validator'
-import { readFile } from '@/lib/utils'
+import { formatPosts, readFile, readPostsFromDb } from '@/lib/utils'
 import Post from '@/models/post'
 import formidable from 'formidable'
 import cloudinary from '@/lib/cloudinary'
-import { IncomingPost } from './[postId]'
+import { IncomingPost } from '@/utils/types'
+
 
 //* убирает 404 {error: 'value must be of type object'}
 export const config = {
@@ -17,8 +18,9 @@ const handler: NextApiHandler = async (req, res) => {
 	const { method } = req
 	switch (method) {
 		case 'GET': {
-			await dbConnect()
-			res.json({ okkk: true })
+			// await dbConnect()
+			// res.json({ okkk: true })
+			return readPosts(req, res)
 		}
 		case 'POST':
 			return createNewPost(req, res)
@@ -94,12 +96,27 @@ const createNewPost: NextApiHandler = async (req, res) => {
 				folder: 'dev-blogs',
 			}
 		)
-		 newPost.thumbnail = { url, public_id }
-		
+		newPost.thumbnail = { url, public_id }
 	}
 
 	await newPost.save()
 
 	res.json({ post: newPost })
 }
+
+
+
+const readPosts: NextApiHandler = async (req, res) => {
+	try {
+		const { limit, pageNumb } = req.query as {
+			limit: string
+			pageNumb: string
+		}
+		const posts = await readPostsFromDb(parseInt(limit), parseInt(pageNumb))
+		res.json({ posts: formatPosts(posts) })
+	} catch (error : any ) {
+		res.status(500).json({error:error.mesage})
+	}
+}
+
 export default handler
