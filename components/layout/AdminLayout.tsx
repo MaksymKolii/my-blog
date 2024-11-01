@@ -1,5 +1,5 @@
 import { FC, ReactNode } from 'react'
-import AdminNav from '../common/AdminNav'
+
 import { MdDashboardCustomize, MdContacts, MdPostAdd } from 'react-icons/md'
 import { AiOutlineContainer } from 'react-icons/ai'
 import { FaUsers } from 'react-icons/fa6'
@@ -8,6 +8,7 @@ import { RiFileAddLine } from 'react-icons/ri'
 
 import Link from 'next/link'
 import AppHead from '../common/AppHead'
+import AdminNav from '../common/nav/AdminNav'
 
 interface IAdminLayout {
 	children: ReactNode

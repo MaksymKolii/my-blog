@@ -18,8 +18,6 @@ const handler: NextApiHandler = async (req, res) => {
 	const { method } = req
 	switch (method) {
 		case 'GET': {
-			// await dbConnect()
-			// res.json({ okkk: true })
 			return readPosts(req, res)
 		}
 		case 'POST':
@@ -112,6 +110,7 @@ const readPosts: NextApiHandler = async (req, res) => {
 			limit: string
 			pageNumb: string
 		}
+		// console.log('REQ.QUERY', req.query);
 		const posts = await readPostsFromDb(parseInt(limit), parseInt(pageNumb))
 		res.json({ posts: formatPosts(posts) })
 	} catch (error : any ) {

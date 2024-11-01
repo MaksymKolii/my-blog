@@ -7,6 +7,7 @@ import Link from 'next/link'
 interface IPostCard {
 	post: PostDetail
 	busy?: boolean
+	controls?: boolean
 	onDeleteClick?(): void
 }
 
@@ -18,6 +19,7 @@ const trimText = (text: string, trimBy: number): string => {
 const PostCard: FC<IPostCard> = ({
 	post,
 	busy,
+	controls = false,
 	onDeleteClick,
 }): JSX.Element => {
 	const { title, slug, meta, tags, thumbnail, createdAt } = post
@@ -35,7 +37,6 @@ const PostCard: FC<IPostCard> = ({
 					<Image
 						src={thumbnail}
 						sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-						
 						width={500}
 						height={300}
 						alt='thumbnail'
@@ -86,28 +87,29 @@ const PostCard: FC<IPostCard> = ({
 					</h1>
 					<p className=' text-secondary-dark'>{trimText(meta, 70)}</p>
 				</Link>
-				<div className='flex justify-end items-center space-x-4 mt-auto h-8 text-primary-dark dark:text-primary'>
-					{busy ? (
-						<span className='animate-pulse'>Removing</span>
-					) : (
-						<>
-							{' '}
-							<Link
-								className='hover:underline'
-								href={'/admin/posts/update/' + slug}
-							>
-								Edit
-							</Link>
-							<button onClick={onDeleteClick} className='hover:underline'>
-								Delete
-							</button>
-						</>
-					)}
-				</div>
+				{controls && (
+					<div className='flex justify-end items-center space-x-4 mt-auto h-8 text-primary-dark dark:text-primary'>
+						{busy ? (
+							<span className='animate-pulse'>Removing</span>
+						) : (
+							<>
+								{' '}
+								<Link
+									className='hover:underline'
+									href={'/admin/posts/update/' + slug}
+								>
+									Edit
+								</Link>
+								<button onClick={onDeleteClick} className='hover:underline'>
+									Delete
+								</button>
+							</>
+						)}
+					</div>
+				)}
 			</div>
 		</div>
 	)
 }
-    
 
 export default PostCard

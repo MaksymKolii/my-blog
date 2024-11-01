@@ -1,10 +1,8 @@
 import Link from 'next/link'
 import { FC, useEffect, useRef, useState } from 'react'
-import Logo from './Logo'
-
-
 import { RiMenuFold4Fill, RiMenuFold3Fill } from "react-icons/ri";
 import { IconType } from 'react-icons'
+import Logo from '../Logo'
 
 interface IAdminNavProps {
 	navItem: {
