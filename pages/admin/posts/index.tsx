@@ -8,7 +8,7 @@ import InfiniteScrollPosts from '@/components/common/InfiniteScrollPosts'
 import { formatPosts, readPostsFromDb } from '@/lib/utils'
 import axios from 'axios'
 
-type IPosts = InferGetServerSidePropsType<typeof getServerSideProps>
+type IProps = InferGetServerSidePropsType<typeof getServerSideProps>
 
 // const posts = [
 // 	{
@@ -80,11 +80,10 @@ const limit = 9
 let pageNumb = 0
 
 
-const Posts: NextPage<IPosts> = ({ posts }) => {
+const Posts: NextPage<IProps> = ({ posts }) => {
 	const [postsToRender, setPostsToRender] = useState(posts)
 	const [hasMorePosts, setHasMorePosts] = useState(true)
 	const fetchMorePosts = async () => {
-
 		try {
 			pageNumb++
 			const { data } = await axios(
@@ -94,13 +93,10 @@ const Posts: NextPage<IPosts> = ({ posts }) => {
 				setPostsToRender([...postsToRender, ...data.posts])
 				setHasMorePosts(false)
 			} else setPostsToRender([...postsToRender, ...data.posts])
-			
 		} catch (error) {
 			setHasMorePosts(false)
-			console.log(error);
-			
+			console.log(error)
 		}
-		
 	}
 	return (
 		<AdminLayout>
@@ -111,7 +107,6 @@ const Posts: NextPage<IPosts> = ({ posts }) => {
 				next={fetchMorePosts}
 				showControls
 			/>
-		
 		</AdminLayout>
 	)
 }
