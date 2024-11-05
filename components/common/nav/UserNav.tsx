@@ -4,10 +4,18 @@ import Logo from '../Logo'
 import { APP_NAME } from '../AppHead'
 import { HiLightBulb } from 'react-icons/hi'
 import { GitHubAuthButton } from '@/components/button'
+import ProfileHead from '../ProfileHead'
+import DropdownOptions, { dropDownOptions } from '../DropdownOptions'
+
+
 
 interface IUserNav {}
 
 const UserNav: FC<IUserNav> = (props): JSX.Element => {
+	const dropDownOptions: dropDownOptions = [
+		{ label: "Dashboard", onClick() { } },
+		{ label: "Logout", onClick() { } }
+	]
 	return (
 		<div
 			className='flex items-center justify-between bg-primary-dark p-3 
@@ -21,13 +29,15 @@ const UserNav: FC<IUserNav> = (props): JSX.Element => {
 				<span className='text-xl font-semibold'>{APP_NAME}</span>
 			</Link>
 			<div className='flex items-center space-x-5'>
-				<button
-					className='dark:text-secondary-dark text-secondary-light'
-				
-				>
-					<HiLightBulb className='' size={34} />
+				<button className='dark:text-secondary-dark text-secondary-light'>
+					<HiLightBulb className='text-secondary-light' size={34} />
 				</button>
-				<GitHubAuthButton lightOnly />
+				{/* <GitHubAuthButton lightOnly /> */}
+
+				<DropdownOptions
+					options={dropDownOptions}
+					head={<ProfileHead nameInitial='N' lightOnly />}
+				/>
 			</div>
 		</div>
 	)
