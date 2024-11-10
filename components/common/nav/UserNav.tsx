@@ -6,15 +6,26 @@ import { HiLightBulb } from 'react-icons/hi'
 import { GitHubAuthButton } from '@/components/button'
 import ProfileHead from '../ProfileHead'
 import DropdownOptions, { dropDownOptions } from '../DropdownOptions'
-
-
+import { signIn, signOut, useSession } from 'next-auth/react'
 
 interface IUserNav {}
 
 const UserNav: FC<IUserNav> = (props): JSX.Element => {
+	const { data, status } = useSession()
+	console.log('{ data, status } = useSession()', data, 'Status -', status)
+	const isAuth = status === 'authenticated'
+	const handleLoginWithGithub = async () => {
+		await signIn('github')
+	}
+
 	const dropDownOptions: dropDownOptions = [
-		{ label: "Dashboard", onClick() { } },
-		{ label: "Logout", onClick() { } }
+		{ label: 'Dashboard', onClick() {} },
+		{
+			label: 'Logout',
+			async onClick() {
+				await signOut()
+			},
+		},
 	]
 	return (
 		<div
@@ -32,12 +43,14 @@ const UserNav: FC<IUserNav> = (props): JSX.Element => {
 				<button className='dark:text-secondary-dark text-secondary-light'>
 					<HiLightBulb className='text-secondary-light' size={34} />
 				</button>
-				{/* <GitHubAuthButton lightOnly /> */}
-
-				<DropdownOptions
-					options={dropDownOptions}
-					head={<ProfileHead nameInitial='N' lightOnly />}
-				/>
+				{isAuth ? (
+					<DropdownOptions
+						options={dropDownOptions}
+						head={<ProfileHead nameInitial='N' lightOnly />}
+					/>
+				) : (
+					<GitHubAuthButton onClick={handleLoginWithGithub} lightOnly />
+				)}
 			</div>
 		</div>
 	)

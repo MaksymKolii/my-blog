@@ -1,9 +1,8 @@
+import Post, { PostModelSchema } from '@/models/Post'
+import { PostDetail } from '@/utils/types'
 import formidable from 'formidable'
 import { NextApiRequest } from 'next'
 import dbConnect from './dbConnect'
-import Post, { PostModelSchema } from '@/models/post'
-import { PostDetail } from '@/utils/types'
-
 
 interface FormidablePromise<T> {
 	files: formidable.Files

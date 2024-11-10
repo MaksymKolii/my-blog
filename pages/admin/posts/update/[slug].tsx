@@ -1,7 +1,7 @@
 import TipTapEditor, { FinalPost } from '@/components/editor'
 import AdminLayout from '@/components/layout/AdminLayout'
 import dbConnect from '@/lib/dbConnect'
-import Post from '@/models/post'
+import Post from '@/models/Post'
 import { generateFormData } from '@/utils/helper'
 import axios from 'axios'
 import { GetServerSideProps, InferGetServerSidePropsType, NextPage } from 'next'

@@ -1,7 +1,7 @@
 import cloudinary from '@/lib/cloudinary'
 import { readFile } from '@/lib/utils'
 import { postValidationSchema, validateSchema } from '@/lib/validator'
-import Post from '@/models/post'
+import Post from '@/models/Post'
 import { IncomingPost } from '@/utils/types'
 import formidable from 'formidable'
 import { NextApiHandler } from 'next'
@@ -19,7 +19,6 @@ const handler: NextApiHandler = (req, res) => {
 			res.status(404).send('Not Found!')
 	}
 }
-
 
 const updatePost: NextApiHandler = async (req, res) => {
 	const postId = req.query.postId as string
@@ -50,13 +49,12 @@ const updatePost: NextApiHandler = async (req, res) => {
 	})
 	if (errorMessage)
 		return res.status(400).json({
-			error: errorMessage, 
+			error: errorMessage,
 		})
 	//*  Без этого tags не будет изменяться при update !!!
 	if (Array.isArray(tags) && tags.length >= 0) {
 		post.tags = tags
 	}
-
 
 	// Валидация пройдена, можно продолжить обработку запроса
 
