@@ -7,19 +7,26 @@ import { GitHubAuthButton } from '@/components/button'
 import ProfileHead from '../ProfileHead'
 import DropdownOptions, { dropDownOptions } from '../DropdownOptions'
 import { signIn, signOut, useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 
 interface IUserNav {}
 
 const UserNav: FC<IUserNav> = (props): JSX.Element => {
+	const router = useRouter()
 	const { data, status } = useSession()
-	console.log('{ data, status } = useSession()', data, 'Status -', status)
+
 	const isAuth = status === 'authenticated'
+
+		console.log('{ data, status } = useSession()', data, 'Status -', status)
 	const handleLoginWithGithub = async () => {
 		await signIn('github')
 	}
 
 	const dropDownOptions: dropDownOptions = [
-		{ label: 'Dashboard', onClick() {} },
+		{
+			label: 'Dashboard', onClick() {
+			router.push("/admin")
+		} },
 		{
 			label: 'Logout',
 			async onClick() {
