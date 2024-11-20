@@ -1,6 +1,6 @@
 import dbConnect from '@/lib/dbConnect'
 import User from '@/models/User'
-import NextAuth, { NextAuthOptions } from 'next-auth'
+import NextAuth, { NextAuthOptions, } from 'next-auth'
 import GithubProvider from 'next-auth/providers/github'
 
 const authOptions: NextAuthOptions = {
@@ -12,9 +12,11 @@ const authOptions: NextAuthOptions = {
 				// console.log('profile -', profile)
 				// find out the user
 				await dbConnect()
-				const oldUser = await User.findOne({ email: profile.email })
+				const oldUser = await User.findOne({
+					email: profile.email.toLowerCase(),
+				})
 				const userProfile = {
-					email: profile.email,
+					email: profile.email.toLowerCase(),
 					name: profile.name || profile.login,
 					avatar: profile.avatar_url,
 					role: 'user',
@@ -35,16 +37,25 @@ const authOptions: NextAuthOptions = {
 		}),
 	],
 	callbacks: {
+		async signIn({ user }) {
+			if (user.email) user.email = user.email.toLowerCase() // Приведение email к нижнему регистру
+			return true
+        },
+        
+		
 		jwt({ token, user }) {
 			if (user) token.role = (user as any).role
 			return token
 		},
-        async session({ session }) {
-          
-            await dbConnect()
-            //   console.log('Sesion', session)
-            const user = await User.findOne({ email: session.user?.email })
-            //  console.log('user', user)
+		async session({ session }) {
+			await dbConnect()
+             if (session.user && session.user.email) {
+								session.user.email = session.user.email.toLowerCase() // Приведение к нижнему регистру
+							}
+			
+			//   console.log('Session', session)
+			const user = await User.findOne({ email: session.user?.email })
+			//  console.log('user', user)
 			if (user)
 				session.user = {
 					id: user._id.toString(),
@@ -52,13 +63,13 @@ const authOptions: NextAuthOptions = {
 					email: user.email.toLowerCase(),
 					avatar: user.avatar,
 					role: user.role,
-                } as any
-            
+				} as any
+
 			return session
 		},
 	},
 	pages: {
-		// signIn: '/auth/signin',
+		//signIn: '/auth/signin',
 		error: '/404',
 	},
 }
