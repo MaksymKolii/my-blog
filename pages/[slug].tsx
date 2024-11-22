@@ -17,24 +17,27 @@ const SinglePost: NextPage<ISinglePost> = ({ post }) => {
 	const { title, content, meta, tags, slug, thumbnail, createdAt } = post
 	return (
 		<DefaultLayout title={title} desc={meta}>
-			{thumbnail ? (
-				<div className='relative aspect-video'>
-					<Image src={thumbnail} alt={title} fill priority />
+			<div className='pb-20'>
+				{thumbnail ? (
+					<div className='relative aspect-video'>
+						<Image src={thumbnail} alt={title} fill priority />
+					</div>
+				) : null}
+				<div className='flex items-center justify-between py-2 text-sm text-primary-dark dark:text-primary'>
+					<div className='space-x-4'>
+						{tags.map((t, idx) => (
+							<span key={idx + t}>#{t}</span>
+						))}
+					</div>
+					<span>{dateFormat(createdAt, 'd-mmm-yyyy')}</span>
 				</div>
-			) : null}
-			<div className='flex items-center justify-between py-2 text-sm text-primary-dark dark:text-primary'>
-				<div className='space-x-4'>
-					{tags.map((t, idx) => (
-						<span key={idx + t}>#{t}</span>
-					))}
+
+				<div className=' prose prose-lg dark:prose-invert max-w-full mx-auto  '>
+					<h1
+					>{title}</h1>
+
+					{parse(content)}
 				</div>
-				<span>{dateFormat(createdAt, 'd-mmm-yyyy')}</span>
-			</div>
-
-			<div className=' prose prose-lg max-w-full mx-auto  '>
-				<h1 className=' text-primary-dark dark:text-primary'>{title}</h1>
-
-				{parse(content)}
 			</div>
 		</DefaultLayout>
 	)

@@ -20,7 +20,7 @@ const navItems = [
 	{ href: '/admin/posts', label: 'Posts', icon: AiOutlineContainer },
 	{ href: '/admin/users', label: 'Users', icon: FaUsers },
 	{ href: '/admin/comments', label: 'Comments', icon: FaComments },
-	{ href: '/admin/contacts', label: 'Contacts', icon: MdContacts },
+	// { href: '/admin/contacts', label: 'Contacts', icon: MdContacts },
 ]
 
 const AdminLayout: FC<IAdminLayout> = ({title, children }): JSX.Element => {
