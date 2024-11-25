@@ -7,6 +7,7 @@ import { PostDetail } from '@/utils/types'
 import InfiniteScrollPosts from '@/components/common/InfiniteScrollPosts'
 import { formatPosts, readPostsFromDb } from '@/lib/utils'
 import axios from 'axios'
+import ConfirmModal from '@/components/common/ConfirmModal'
 
 type IProps = InferGetServerSidePropsType<typeof getServerSideProps>
 
@@ -99,15 +100,19 @@ const Posts: NextPage<IProps> = ({ posts }) => {
 		}
 	}
 	return (
-		<AdminLayout>
-			<InfiniteScrollPosts
-				hasMore={hasMorePosts}
-				posts={postsToRender}
-				dataLength={postsToRender.length}
-				next={fetchMorePosts}
-				showControls
-			/>
-		</AdminLayout>
+		<>
+			
+			<AdminLayout>
+				<InfiniteScrollPosts
+					hasMore={hasMorePosts}
+					posts={postsToRender}
+					dataLength={postsToRender.length}
+					next={fetchMorePosts}
+					showControls
+				/>
+			</AdminLayout>
+			<ConfirmModal visible busy title='Are U sure?' subTitle='This action permanently remove this post!'/>
+		</>
 	)
 }
 

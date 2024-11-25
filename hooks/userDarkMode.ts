@@ -1,3 +1,7 @@
+
+
+// * ------------------------------------------
+
 import { useEffect } from 'react'
 
 const THEME_MODE = 'theme-mode'
@@ -8,6 +12,7 @@ const useDarkMode = () => {
 	const storeThemeToLs = (themeMode: string) => {
 		localStorage.setItem(THEME_MODE, themeMode)
 	}
+
 	const readThemeFromLs = () => {
 		return localStorage.getItem(THEME_MODE) || ''
 	}
@@ -26,46 +31,43 @@ const useDarkMode = () => {
 	}
 
 	useEffect(() => {
-		const oldTheme = readThemeFromLs()
-		if (oldTheme) {
-			return updateTheme(oldTheme)
-        }
-        console.log('Checking for dark mode preference')
-if (typeof window === 'undefined') {
-	console.log('Not running in a browser environment')
-	return
-}
-		// const runningOnDarkMode = window.matchMedia(
-		// 	'(prefers-color-scheme: dark)'
-		// ).matches
-		// console.log('runningOnDarkMode-', runningOnDarkMode)
-
-		if (typeof window !== 'undefined') {
-			const runningOnDarkMode = window.matchMedia(
-				'(prefers-color-scheme: dark)'
-			).matches
-			console.log(
-				'runningOnDarkMode-',
-
-				runningOnDarkMode
-			)
-
-			if (runningOnDarkMode) {
-				updateTheme(darkTheme)
-				storeThemeToLs(darkTheme)
-			} else {
-				updateTheme(defaultTheme)
-				storeThemeToLs(defaultTheme)
-			}
+		console.log('Checking for dark mode preference')
+		console.log('Environment check: typeof window:', typeof window)
+		if (!window.matchMedia) {
+			console.log('window.matchMedia is not supported')
+			return
 		}
 
-		// if (runningOnDarkMode) {
-		// 	updateTheme(darkTheme)
-		// 	storeThemeToLs(darkTheme)
-		// } else {
-		// 	updateTheme(defaultTheme)
-		// 	storeThemeToLs(defaultTheme)
-		// }
+		// Проверяем выполнение в браузере
+		if (typeof window === 'undefined') {
+			console.log('Not running in a browser environment')
+			return
+		}
+
+		// Проверяем наличие сохраненной темы
+		const oldTheme = readThemeFromLs()
+		if (oldTheme) {
+			console.log('Found saved theme:', oldTheme)
+			// updateTheme(oldTheme)
+		
+		
+			return updateTheme(oldTheme)
+		}
+
+		// Определяем предпочтительную цветовую схему
+		const runningOnDarkMode = window.matchMedia(
+			'(prefers-color-scheme: dark)'
+		).matches
+
+		console.log('runningOnDarkMode:', runningOnDarkMode)
+
+		if (runningOnDarkMode) {
+			updateTheme(darkTheme)
+			storeThemeToLs(darkTheme)
+		} else {
+			updateTheme(defaultTheme)
+			storeThemeToLs(defaultTheme)
+		}
 	}, [])
 
 	return { toggleTheme }

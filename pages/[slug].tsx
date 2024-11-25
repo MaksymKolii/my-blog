@@ -23,6 +23,9 @@ const SinglePost: NextPage<ISinglePost> = ({ post }) => {
 						<Image src={thumbnail} alt={title} fill priority />
 					</div>
 				) : null}
+				<h1 className='text-6xl font-semibold text-primary-dark dark:text-primary py-3'>
+					{title}
+				</h1>
 				<div className='flex items-center justify-between py-2 text-sm text-primary-dark dark:text-primary'>
 					<div className='space-x-4'>
 						{tags.map((t, idx) => (
@@ -33,9 +36,6 @@ const SinglePost: NextPage<ISinglePost> = ({ post }) => {
 				</div>
 
 				<div className=' prose prose-lg dark:prose-invert max-w-full mx-auto  '>
-					<h1
-					>{title}</h1>
-
 					{parse(content)}
 				</div>
 			</div>

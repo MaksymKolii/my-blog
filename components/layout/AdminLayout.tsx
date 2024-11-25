@@ -9,6 +9,7 @@ import { RiFileAddLine } from 'react-icons/ri'
 import Link from 'next/link'
 import AppHead from '../common/AppHead'
 import AdminNav from '../common/nav/AdminNav'
+import AdminSecondaryNav from '../common/nav/AdminSecondaryNav'
 
 interface IAdminLayout {
 	children: ReactNode
@@ -29,7 +30,10 @@ const AdminLayout: FC<IAdminLayout> = ({title, children }): JSX.Element => {
 			<AppHead title={title} />
 			<div className='flex'>
 				<AdminNav navItem={navItems} />
-				<div className='flex-1 p-4'>{children}</div>
+				<div className='flex-1 p-4 dark:bg-primary-dark bg-primary"'>
+					<AdminSecondaryNav />
+					{children}
+				</div>
 				{/* Create button */}
 				<Link
 					href='/admin/posts/create'
@@ -38,7 +42,7 @@ const AdminLayout: FC<IAdminLayout> = ({title, children }): JSX.Element => {
 					<MdPostAdd size={24} />
 				</Link>
 
-{/* <Link legacyBehavior href="/admin/post/create">
+				{/* <Link legacyBehavior href="/admin/post/create">
           <a className="bg-secondary-dark dark:bg-secondary-light text-primary dark:text-primary-dark fixed z-10 right-10 bottom-10 p-3 rounded-full hover:scale-90 shadow-sm transition">
 		  <MdPostAdd size={24} />
           </a>
