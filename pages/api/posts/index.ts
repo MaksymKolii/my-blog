@@ -3,9 +3,13 @@ import dbConnect from '@/lib/dbConnect'
 import { formatPosts, readFile, readPostsFromDb } from '@/lib/utils'
 import { postValidationSchema, validateSchema } from '@/lib/validator'
 import Post from '@/models/Post'
-import { IncomingPost } from '@/utils/types'
+import { IncomingPost, UserProfile } from '@/utils/types'
 import formidable from 'formidable'
 import { NextApiHandler } from 'next'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '../auth/[...nextauth]'
+import { error } from 'console'
+
 
 //* убирает 404 {error: 'value must be of type object'}
 export const config = {
@@ -24,6 +28,13 @@ const handler: NextApiHandler = async (req, res) => {
 }
 
 const createNewPost: NextApiHandler = async (req, res) => {
+
+	const session = await getServerSession(req, res, authOptions)
+	// console.log('await getServerSession', session)
+	const user = session?.user as UserProfile
+	if(!user || user.role !=='admin') return res.status(401).json({error:"unauthorized request!!!!"})
+
+
 	//* work because formData return obj with arrays inside we need to Преобразуем значения полей в строки, если они массивы
 	const { files, body } = await readFile<IncomingPost>(req)
 

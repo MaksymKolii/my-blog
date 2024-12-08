@@ -15,10 +15,10 @@ type IProps = InferGetServerSidePropsType<typeof getServerSideProps>
 
 const Home: NextPage<IProps> = ({ posts }) => {
 	const [postsToRender, setPostsToRender] = useState(posts)
-	const [hasMorePosts, setHasMorePosts] = useState(true)
+	const [hasMorePosts, setHasMorePosts] = useState(posts.length >= limit)
 	const { data } = useSession()
 	const profile = data?.user as UserProfile
-	const isAdmin = profile && profile.role ==='admin'
+	const isAdmin = profile && profile.role === 'admin'
 
 	const fetchMorePosts = async () => {
 		try {
@@ -26,7 +26,7 @@ const Home: NextPage<IProps> = ({ posts }) => {
 			const { data } = await axios(
 				//* if deleting 1 post will show total pages less by 1 every time
 				//  `/api/posts?limit=${limit}&pageNumb=${pageNumb}`
-				 `/api/posts?limit=${limit}&skip=${postsToRender.length}`
+				`/api/posts?limit=${limit}&skip=${postsToRender.length}`
 			)
 			if (data.posts.length < limit) {
 				setPostsToRender([...postsToRender, ...data.posts])
@@ -48,7 +48,7 @@ const Home: NextPage<IProps> = ({ posts }) => {
 					next={fetchMorePosts}
 					showControls={isAdmin}
 					onPostRemoved={post => {
-						setPostsToRender(filterPosts(posts, post))
+						setPostsToRender(filterPosts(postsToRender, post))
 					}}
 				/>
 			</div>

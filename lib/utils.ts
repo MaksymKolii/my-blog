@@ -1,8 +1,10 @@
 import Post, { PostModelSchema } from '@/models/Post'
-import { PostDetail } from '@/utils/types'
+import { PostDetail, UserProfile } from '@/utils/types'
 import formidable from 'formidable'
-import { NextApiRequest } from 'next'
+import { NextApiRequest, NextApiResponse } from 'next'
 import dbConnect from './dbConnect'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/pages/api/auth/[...nextauth]'
 
 interface FormidablePromise<T> {
 	files: formidable.Files
@@ -48,4 +50,16 @@ export const formatPosts = (posts: PostModelSchema[]): PostDetail[] => {
 		meta: post.meta,
 		tags: post.tags,
 	}))
+}
+export const isAdmin =  async(req:NextApiRequest, res:NextApiResponse) => {
+	const session = await getServerSession(req, res, authOptions)
+	// console.log('await getServerSession', session)
+
+	  if (!session) {
+			return res.status(401).json({ error: 'unauthorized request!!!!' })
+		}
+	const user = session.user as UserProfile
+	if (!user || user.role !== 'admin')
+		return res.status(401).json({ error: 'unauthorized request!!!!' })
+	return true // Возвращаем true, если пользователь — администратор
 }

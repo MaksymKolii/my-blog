@@ -78,7 +78,7 @@ const InfiniteScrollPosts: FC<IInfiniteScrollPosts> = ({
 									post={post}
 									controls={showControls}
 									onDeleteClick={() => handleOnDeleteClick(post)}
-									busy={removing}
+									busy={post.id === postToRemove?.id &&removing}
 								/>
 							</div>
 						))}
