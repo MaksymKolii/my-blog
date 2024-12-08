@@ -25,21 +25,22 @@ export const readFile = <T extends object>(
 		})
 	})
 }
-export const readPostsFromDb = async (limit: number, pageNumb: number) => {
+export const readPostsFromDb = async (limit: number, pageNumb: number, skip?: number) => {
 	if (!limit || limit > 10)
 		throw Error('Please USE limit under 10 !! and a valid pageNumb')
-	const skip = limit * pageNumb
+	const finalSkip = skip || limit * pageNumb
 	await dbConnect()
 	const posts = await Post.find()
 		.sort({ createdAt: 'desc' })
 		.select('-content')
-		.skip(skip)
+		.skip(finalSkip)
 		.limit(limit)
 	return posts
 }
 
 export const formatPosts = (posts: PostModelSchema[]): PostDetail[] => {
 	return posts.map(post => ({
+		id:post._id.toString(),
 		title: post.title,
 		slug: post.slug,
 		createdAt: post.createdAt.toString(),

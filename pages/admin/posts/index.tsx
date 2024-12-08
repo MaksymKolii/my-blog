@@ -8,6 +8,7 @@ import InfiniteScrollPosts from '@/components/common/InfiniteScrollPosts'
 import { formatPosts, readPostsFromDb } from '@/lib/utils'
 import axios from 'axios'
 import ConfirmModal from '@/components/common/ConfirmModal'
+import { filterPosts } from '@/utils/helper'
 
 type IProps = InferGetServerSidePropsType<typeof getServerSideProps>
 
@@ -88,7 +89,9 @@ const Posts: NextPage<IProps> = ({ posts }) => {
 		try {
 			pageNumb++
 			const { data } = await axios(
-				`/api/posts?limit=${limit}&pageNumb=${pageNumb}`
+				//* if deleting 1 post will show total pages less by 1 every time
+				// `/api/posts?limit=${limit}&pageNumb=${pageNumb}`
+				 `/api/posts?limit=${limit}&skip=${postsToRender.length}`
 			)
 			if (data.posts.length < limit) {
 				setPostsToRender([...postsToRender, ...data.posts])
@@ -109,9 +112,10 @@ const Posts: NextPage<IProps> = ({ posts }) => {
 					dataLength={postsToRender.length}
 					next={fetchMorePosts}
 					showControls
+					onPostRemoved={(post)=>{setPostsToRender(filterPosts(posts,post))}}
 				/>
 			</AdminLayout>
-			<ConfirmModal visible busy title='Are U sure?' subTitle='This action permanently remove this post!'/>
+			{/* <ConfirmModal   title='Are U sure?' subTitle='This action permanently remove this post!'/> */}
 		</>
 	)
 }

@@ -102,12 +102,17 @@ const createNewPost: NextApiHandler = async (req, res) => {
 
 const readPosts: NextApiHandler = async (req, res) => {
 	try {
-		const { limit, pageNumb } = req.query as {
+		const { limit, pageNumb, skip } = req.query as {
 			limit: string
 			pageNumb: string
+			skip:string
 		}
 		// console.log('REQ.QUERY', req.query);
-		const posts = await readPostsFromDb(parseInt(limit), parseInt(pageNumb))
+		const posts = await readPostsFromDb(
+			parseInt(limit),
+			parseInt(pageNumb),
+			parseInt(skip)
+		)
 		res.json({ posts: formatPosts(posts) })
 	} catch (error: any) {
 		res.status(500).json({ error: error.mesage })

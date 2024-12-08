@@ -1,6 +1,6 @@
 export interface PostDetail {
 	title: string
-	// content: string
+	id: string
 	slug: string
 	meta: string
     tags: string[]

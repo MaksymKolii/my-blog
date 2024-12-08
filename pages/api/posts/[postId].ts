@@ -3,6 +3,7 @@ import { readFile } from '@/lib/utils'
 import { postValidationSchema, validateSchema } from '@/lib/validator'
 import Post from '@/models/Post'
 import { IncomingPost } from '@/utils/types'
+import { error } from 'console'
 import formidable from 'formidable'
 import { NextApiHandler } from 'next'
 
@@ -15,9 +16,30 @@ const handler: NextApiHandler = (req, res) => {
 	switch (method) {
 		case 'PATCH':
 			return updatePost(req, res)
+		case 'DELETE':
+			return removePost(req, res)
 		default:
 			res.status(404).send('Not Found!')
 	}
+}
+
+const removePost: NextApiHandler = async (req, res) => {
+	try {
+		const postId = req.query.postId as string
+		const deletedPost = await Post.findByIdAndDelete(postId)
+
+		if (!deletedPost) return res.status(404).json({ error: 'Post not found!' })
+
+		// remove thumbnail from post
+		const publicId = deletedPost.thumbnail?.public_id
+		if (publicId) {
+			await cloudinary.uploader.destroy(publicId)
+		}
+		res.json({ removed: true })
+	
+} catch (error: any) {
+	return res.status(500).json({ error: error.message})
+}
 }
 
 const updatePost: NextApiHandler = async (req, res) => {

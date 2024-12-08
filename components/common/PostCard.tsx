@@ -93,7 +93,6 @@ const PostCard: FC<IPostCard> = ({
 							<span className='animate-pulse'>Removing</span>
 						) : (
 							<>
-								{' '}
 								<Link
 									className='hover:underline'
 									href={'/admin/posts/update/' + slug}

@@ -1,4 +1,5 @@
 import classNames from "classnames";
+import Image from 'next/image'
 import { ChangeEventHandler, FC, useEffect, useState } from "react";
 
 interface Props {
@@ -30,27 +31,35 @@ const ThumbnailSelector: FC<Props> = ({
   }, [initialValue]);
 
   return (
-    <div className="w-32">
-      <input
-        type="file"
-        hidden
-        accept="image/jpg, image/png, image/jpeg"
-        id="thumbnail"
-        onChange={handleChange}
-      />
-      <label htmlFor="thumbnail">
-        {selectedThumbnail ? (
-          <img
-            src={selectedThumbnail}
-            alt=""
-            className={classNames(commonClass, "object-cover")}
-          />
-        ) : (
-          <PosterUI label="Thumbnail" />
-        )}
-      </label>
-    </div>
-  );
+		<div className='w-32'>
+			<input
+				type='file'
+				hidden
+				accept='image/jpg, image/png, image/jpeg'
+				id='thumbnail'
+				onChange={handleChange}
+			/>
+			<label htmlFor='thumbnail'>
+				{selectedThumbnail ? (
+					<Image
+						src={selectedThumbnail}
+						alt=''
+						className={classNames(commonClass, 'object-cover')}
+						layout='responsive' // или "intrinsic", в зависимости от ваших нужд
+						width={500} // Замените на реальную ширину
+						height={300} // Замените на реальную высоту
+					/>
+				) : (
+					// <img
+					//   src={selectedThumbnail}
+					//   alt=""
+					//   className={classNames(commonClass, "object-cover")}
+					// />
+					<PosterUI label='Thumbnail' />
+				)}
+			</label>
+		</div>
+	)
 };
 
 const PosterUI: FC<{ label: string; className?: string }> = ({

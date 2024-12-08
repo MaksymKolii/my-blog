@@ -33,10 +33,10 @@ const ConfirmModal: FC<IConfirmModal> = ({onClose,busy=false, visible, title, su
 					)}
 					{!busy && (
 						<div className='flex items-center justify-between pt-2'>
-							<button className={classNames(commonBtnClasses, 'bg-red-500 ')}>
+							<button onClick={onConfirm} className={classNames(commonBtnClasses, 'bg-red-500 ')}>
 								Confirm
 							</button>
-							<button className={classNames(commonBtnClasses, 'bg-blue-500 ')}>
+							<button onClick={onCancel} className={classNames(commonBtnClasses, 'bg-blue-500 ')}>
 								Cancel
 							</button>
 						</div>
