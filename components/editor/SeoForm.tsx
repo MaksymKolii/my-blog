@@ -1,4 +1,4 @@
-import { ChangeEventHandler, FC, useEffect, useState } from "react";
+import { ChangeEventHandler, FC, useCallback, useEffect, useState } from "react";
 import classnames from "classnames";
 import slugify from "slugify";
 
@@ -22,69 +22,98 @@ const SEOForm: FC<ISeoForm> = ({
   title = "",
   onChange,
 }): JSX.Element => {
-  const [values, setValues] = useState({ meta: "", slug: "", tags: "" });
+	const [values, setValues] = useState({ meta: '', slug: '', tags: '' })
 
-  const handleChange: ChangeEventHandler<
-    HTMLTextAreaElement | HTMLInputElement
-  > = ({ target }) => {
-    let { name, value } = target;
-    //* we cut length of value to max 150 symbols
-    if (name === "meta") value = value.substring(0, 150);
-    const newValues = { ...values, [name]: value };
-    setValues(newValues);
-    onChange(newValues);
-  };
+	const handleChange: ChangeEventHandler<
+		HTMLTextAreaElement | HTMLInputElement
+	> = ({ target }) => {
+		let { name, value } = target
+		//* we cut length of value to max 150 symbols
+		if (name === 'meta') value = value.substring(0, 150)
+    // const newValues = { ...values, [name]: value }
+      const newValues = {
+				...values,
+				[name]: name === 'meta' && !value ? ' ' : value,
+			}
+		setValues(newValues)
+		onChange(newValues)
+	}
+	const updateSlug = useCallback(() => {
+		setValues(prev => {
+			const newValues = { ...prev, slug: slugify(title.toLowerCase()) }
+			onChange(newValues) // Вызываем внешний обработчик
+			return newValues
+		})
+	}, [title, onChange])
+
+	useEffect(() => {
+		if (title) {
+			updateSlug() // Вызываем только функцию
+		}
+	}, [title]) // Убираем зависимость от updateSlug
+
 
   useEffect(() => {
-    const slug = slugify(title.toLowerCase());
-    const newValues = { ...values, slug };
-    setValues(newValues);
-    onChange(newValues);
-  }, [title]);
+		if (initialValue) {
+			setValues({
+				meta: initialValue.meta || '', // Значение по умолчанию
+				slug: slugify(initialValue.slug || ''),
+				tags: initialValue.tags || '',
+			})
+		}
+	}, [initialValue])
 
-  useEffect(() => {
-    if (initialValue) {
-      setValues({ ...initialValue, slug: slugify(initialValue.slug) });
-    }
-  }, [initialValue]);
 
-  const { meta, slug, tags } = values;
+	// useEffect(() => {
+	// 	const slug = slugify(title.toLowerCase())
+	// 	const newValues = { ...values, slug }
+	// 	setValues(newValues)
+	// 	onChange(newValues)
+	// }, [title])
 
-  return (
-    <div className="space-y-4">
-      <h1 className="text-primary-dark dark:text-primary text-xl font-semibold">
-        SEO Section
-      </h1>
+	// useEffect(() => {
+	// 	if (initialValue) {
+	// 		setValues({ ...initialValue, slug: slugify(initialValue.slug) })
+	// 	}
+	// }, [initialValue])
 
-      <Input
-        value={slug}
-        onChange={handleChange}
-        name="slug"
-        placeholder="slug-goes-here"
-        label="Slug:"
-      />
-      <Input
-        value={tags}
-        onChange={handleChange}
-        name="tags"
-        placeholder="React, Next JS"
-        label="Tags:"
-      />
+	const { meta, slug, tags } = values
 
-      <div className="relative">
-        <textarea
-          name="meta"
-          value={meta}
-          onChange={handleChange}
-          className={classnames(commonInput, "text-lg h-20 resize-none")}
-          placeholder="Meta description 150 characters will be fine"
-        ></textarea>
-        <p className="absolute bottom-3 right-3 text-primary-dark dark:text-primary text-sm">
-          {meta.length}/150
-        </p>
-      </div>
-    </div>
-  );
+	return (
+		<div className='space-y-4'>
+			<h1 className='text-primary-dark dark:text-primary text-xl font-semibold'>
+				SEO Section
+			</h1>
+
+			<Input
+				value={slug}
+				onChange={handleChange}
+				name='slug'
+				placeholder='slug-goes-here'
+				label='Slug:'
+			/>
+			<Input
+				value={tags}
+				onChange={handleChange}
+				name='tags'
+				placeholder='React, Next JS'
+				label='Tags:'
+			/>
+
+			<div className='relative'>
+				<textarea
+					name='meta'
+					value={meta}
+					onChange={handleChange}
+					className={classnames(commonInput, 'text-lg h-20 resize-none')}
+					placeholder='Meta description 150 characters will be fine'
+				></textarea>
+				<p className='absolute bottom-3 right-3 text-primary-dark dark:text-primary text-sm'>
+					{meta.length}/150
+				</p>
+			</div>
+		</div>
+	)
 };
 
 const Input: FC<{

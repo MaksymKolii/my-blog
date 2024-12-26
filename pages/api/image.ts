@@ -55,11 +55,11 @@
 
 // export default handler
 
-//*  work bu
+//*  work but need update meta every time
 import { NextApiHandler } from 'next'
 import formidable from 'formidable'
 import cloudinary from '@/lib/cloudinary'
-import { readFile } from '@/lib/utils'
+import { isAdmin, readFile } from '@/lib/utils'
 
 export const config = {
 	api: { bodyParser: false },
@@ -79,6 +79,11 @@ const handler: NextApiHandler = (req, res) => {
 
 const readAllImages: NextApiHandler = async (req, res) => {
 	try {
+		const admin = await isAdmin(req, res)
+
+		if (!admin)
+			return res.status(401).json({ error: 'unauthorized request!!!!' })
+
 		const { resources } = await cloudinary.api.resources({
 			resource_type: 'image',
 			type: 'upload',
@@ -115,7 +120,11 @@ const uploadNewImage: NextApiHandler = async (req, res) => {
 	//* code can work with multiple chosen images and only version formidable": "^3.5.1","@types/formidable": "^3.4.5"
 
 	try {
-		console.log('Parsing request...')
+		const admin = await isAdmin(req, res)
+
+		if (!admin)
+			return res.status(401).json({ error: 'unauthorized request!!!!' })
+		// console.log('Parsing request...')
 		const { files } = await readFile(req)
 
 		if (!files.image) {

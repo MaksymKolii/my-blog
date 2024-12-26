@@ -1,9 +1,8 @@
 import cloudinary from '@/lib/cloudinary'
-import { readFile } from '@/lib/utils'
+import { isAdmin, readFile } from '@/lib/utils'
 import { postValidationSchema, validateSchema } from '@/lib/validator'
 import Post from '@/models/Post'
 import { IncomingPost } from '@/utils/types'
-import { error } from 'console'
 import formidable from 'formidable'
 import { NextApiHandler } from 'next'
 
@@ -24,6 +23,10 @@ const handler: NextApiHandler = (req, res) => {
 }
 
 const removePost: NextApiHandler = async (req, res) => {
+
+	const admin = await isAdmin(req, res)
+
+	if (!admin) return res.status(401).json({ error: 'unauthorized request!!!!' })
 	try {
 		const postId = req.query.postId as string
 		const deletedPost = await Post.findByIdAndDelete(postId)
@@ -43,6 +46,10 @@ const removePost: NextApiHandler = async (req, res) => {
 }
 
 const updatePost: NextApiHandler = async (req, res) => {
+
+	const admin = await isAdmin(req, res)
+
+	if (!admin) return res.status(401).json({ error: 'unauthorized request!!!!' })
 	const postId = req.query.postId as string
 
 	const post = await Post.findById(postId)

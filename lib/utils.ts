@@ -51,15 +51,21 @@ export const formatPosts = (posts: PostModelSchema[]): PostDetail[] => {
 		tags: post.tags,
 	}))
 }
-export const isAdmin =  async(req:NextApiRequest, res:NextApiResponse) => {
-	const session = await getServerSession(req, res, authOptions)
-	// console.log('await getServerSession', session)
+// export const is1Admin=  async(req:NextApiRequest, res:NextApiResponse) => {
+// 	const session = await getServerSession(req, res, authOptions)
+// 	// console.log('await getServerSession', session)
 
-	  if (!session) {
-			return res.status(401).json({ error: 'unauthorized request!!!!' })
-		}
-	const user = session.user as UserProfile
-	if (!user || user.role !== 'admin')
-		return res.status(401).json({ error: 'unauthorized request!!!!' })
-	return true // Возвращаем true, если пользователь — администратор
+// 	  if (!session) {
+// 			return res.status(401).json({ error: 'unauthorized request!!!!' })
+// 		}
+// 	const user = session.user as UserProfile
+// 	if (!user || user.role !== 'admin')
+// 		return res.status(401).json({ error: 'unauthorized request!!!!' })
+// 	return true // Возвращаем true, если пользователь — администратор
+// }
+
+export const isAdmin = async (req: NextApiRequest, res: NextApiResponse) => {
+	const session = await getServerSession(req, res, authOptions)
+	const user = session?.user as UserProfile
+	return user && user.role === 'admin'
 }

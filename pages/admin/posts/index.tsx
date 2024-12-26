@@ -1,13 +1,12 @@
-import PostCard from '@/components/common/PostCard'
 import AdminLayout from '@/components/layout/AdminLayout'
 import { GetServerSideProps, InferGetServerSidePropsType, NextPage } from 'next'
 import { useState } from 'react'
-import { nanoid } from 'nanoid'
+
 import { PostDetail } from '@/utils/types'
 import InfiniteScrollPosts from '@/components/common/InfiniteScrollPosts'
 import { formatPosts, readPostsFromDb } from '@/lib/utils'
 import axios from 'axios'
-import ConfirmModal from '@/components/common/ConfirmModal'
+
 import { filterPosts } from '@/utils/helper'
 
 type IProps = InferGetServerSidePropsType<typeof getServerSideProps>
