@@ -182,7 +182,7 @@ const GalleryModal: FC<IGalleryModal> = ({
 											<Image
 												src={selectedImage}
 												layout='fill'
-												alt='gallery'
+												alt='selected'
 												objectFit='contain'
 												// style={{ objectFit: 'contain' }}
 											/>

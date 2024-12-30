@@ -31,7 +31,8 @@ const Gallery: FC<IGallery> = ({
 							<ImageG
 								src={src}
 								onClick={()=>onSelect(src)}
-								selected={selectedImage===src}
+								selected={selectedImage === src}
+								alt='gallery'
 							
 							></ImageG>
 						</div>
