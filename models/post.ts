@@ -41,7 +41,7 @@ const PostSchema = new Schema<PostModelSchema>(
 		},
 		meta: {
 			type: String,
-			required: true,
+			// required: true,
 			trim: true,
 		},
 		author: {
