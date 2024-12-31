@@ -1,11 +1,11 @@
 
-import Post, { PostModelSchema } from 'models/Post'
-import { PostDetail, UserProfile } from 'utils/types'
+import Post, { PostModelSchema } from '../models/Post'
+import { PostDetail, UserProfile } from '../utils/types'
 import formidable from 'formidable'
 import { NextApiRequest, NextApiResponse } from 'next'
 import dbConnect from './dbConnect'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/pages/api/auth/[...nextauth]'
+import { authOptions } from '../pages/api/auth/[...nextauth]'
 
 interface FormidablePromise<T> {
 	files: formidable.Files
