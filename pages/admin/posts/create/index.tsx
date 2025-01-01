@@ -18,8 +18,10 @@ const Create: NextPage<ICreate> = () => {
 			const formData = generateFormData(post)
 			// submit our post
 			const { data } = await axios.post('/api/posts', formData)
-			console.log('!!! Created data !!!', data)
-			router.push('/admin/posts/update/' + data.post.slug)
+			// console.log('!!! Created data !!!', data)
+			//? push not work i will try replace!!
+			// router.push('/admin/posts/update/' + data.post.slug)
+			router.replace('/admin/posts/update/' + data.post.slug)
 
 			
 		} catch (error: any) {
