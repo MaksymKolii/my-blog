@@ -1,5 +1,5 @@
 
-import Post, { PostModelSchema } from '../models/Post'
+import Post, { PostModelSchema } from '@/models/post'
 import { PostDetail, UserProfile } from '../utils/types'
 import formidable from 'formidable'
 import { NextApiRequest, NextApiResponse } from 'next'
