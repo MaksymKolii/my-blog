@@ -9,7 +9,7 @@ import { useState } from 'react'
 interface ICreate {}
 
 const Create: NextPage<ICreate> = () => {
-	const [creating, setCreating] = useState(false)
+	const [creating, setCreating] = useState(false)  
 	const router = useRouter()
 	const handleSubmit = async (post: FinalPost) => {
 		setCreating(true)
@@ -36,4 +36,5 @@ const Create: NextPage<ICreate> = () => {
 		</AdminLayout>
 	)
 }
+export default Create
 
