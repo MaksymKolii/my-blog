@@ -9,7 +9,7 @@ export const authOptions: NextAuthOptions = {
 			clientId: process.env.GITHUB_CLIENT_ID as string,
 			clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
 			async profile(profile) {
-				// console.log('profile -', profile)
+				console.log('profile -', profile)
 				// find out the user
 				await dbConnect()
 				const oldUser = await User.findOne({
