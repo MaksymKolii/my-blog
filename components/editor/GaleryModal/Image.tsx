@@ -23,6 +23,7 @@ const ImageG: FC<IImageG> = ({ src,alt ='image', selected, onClick }): JSX.Eleme
 				height={200}
 				// alt={alt || 'Default alt text'}
 				alt={alt}
+				fill
 				
 				//* Legacy
 				// objectFit='cover'
