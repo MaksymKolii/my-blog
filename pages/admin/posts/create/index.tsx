@@ -3,57 +3,37 @@ import AdminLayout from '@/components/layout/AdminLayout'
 import { generateFormData } from '@/utils/helper'
 import axios from 'axios'
 import { NextPage } from 'next'
+import { useRouter } from 'next/router'
+import { useState } from 'react'
 
 interface ICreate {}
 
 const Create: NextPage<ICreate> = () => {
+	const [creating, setCreating] = useState(false)
+	const router = useRouter()
 	const handleSubmit = async (post: FinalPost) => {
-		
+		setCreating(true)
 		try {
 			// we have to generate Form Data };
 			const formData = generateFormData(post)
-
-			// for (let key in post) {
-			// 	let value = (post as any)[key]
-			// 	//? was key === 'tags' && value.trim() without filter
-			// 	if (key === 'tags') {
-			// 		// Преобразуем строку tags в массив строк, обрезаем пробелы и фильтруем пустые строки
-			// 		const tags = value
-			// 			.split(',')
-			// 			.map((tag: string) => tag.trim())
-			// 			.filter((tag: string) => tag !== '')
-			// 		formData.append('tags', JSON.stringify(tags))
-			// 	} else {
-			// 		// Для остальных полей добавляем их как есть
-			// 		formData.append(key, value)
-			// 	}
-			// }
-			// submit your post
-			// Здесь будет вызов для отправки данных на сервер, например:
+			// submit our post
 			const { data } = await axios.post('/api/posts', formData)
 			console.log('!!! Created data !!!', data)
+			router.push('/admin/posts/update/' + data.post.slug)
+
+			
 		} catch (error: any) {
 			console.log(error.response.data)
 		}
+		setCreating(false)
 	}
 
 	return (
 		<AdminLayout title='New Post'>
 			<div className='max-w-4xl mx-auto'>
-				<TipTapEditor onSubmit={handleSubmit} />
-				{/* <TipTapEditor  onSubmit={uu => console.log('uu', uu)} 
-					initialValue={{
-						title:"This is from Create",
-						meta:"Little meta description",
-						content:"<h1>I am Header</h1>",
-						slug:"this-is-from-create",
-						tags:"javascript",
-						thumbnail:
-						// 'https://cdn.pixabay.com/photo/2024/07/29/02/28/snake-8928741_1280.jpg', 
-						'https://images.unsplash.com/photo-1664784805210-9fa665e2b7e9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw1fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60',}}/> */}
+				<TipTapEditor onSubmit={handleSubmit} busy={creating} />
 			</div>
 		</AdminLayout>
 	)
 }
 
-export default Create

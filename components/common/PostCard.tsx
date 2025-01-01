@@ -87,6 +87,7 @@ const PostCard: FC<IPostCard> = ({
 					</h1>
 					<p className=' text-secondary-dark'>{trimText(meta, 70)}</p>
 				</Link>
+			
 				{controls && (
 					<div className='flex justify-end items-center space-x-4 mt-auto h-8 text-primary-dark dark:text-primary'>
 						{busy ? (
