@@ -1,15 +1,29 @@
 import dbConnect from '@/lib/dbConnect'
 import User from '@/models/User'
-import NextAuth, { NextAuthOptions, } from 'next-auth'
+import NextAuth, { NextAuthOptions } from 'next-auth'
 import GithubProvider from 'next-auth/providers/github'
+
+const {
+	GITHUB_CLIENT_ID,
+	GITHUB_CLIENT_SECRET,
+	GITHUB_CLIENT_ID_LOCAL,
+	GITHUB_CLIENT_SECRET_LOCAL,
+	MODE,
+} = process.env
+
+const GIT_CLIENT_ID =
+	MODE === 'development' ? GITHUB_CLIENT_ID_LOCAL : GITHUB_CLIENT_ID
+const GIT_CLIENT_SECRET =
+	MODE === 'development' ? GITHUB_CLIENT_SECRET_LOCAL : GITHUB_CLIENT_SECRET
 
 export const authOptions: NextAuthOptions = {
 	providers: [
 		GithubProvider({
-			clientId: process.env.GITHUB_CLIENT_ID as string,
-			clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+			clientId: GIT_CLIENT_ID as string,
+			clientSecret: GIT_CLIENT_SECRET as string,
 			async profile(profile) {
-				console.log('profile -', profile)
+				// console.log('profile.login', profile.login)
+				// console.log('profile.email', profile.email)
 				// find out the user
 				await dbConnect()
 				const oldUser = await User.findOne({
@@ -40,19 +54,18 @@ export const authOptions: NextAuthOptions = {
 		async signIn({ user }) {
 			if (user.email) user.email = user.email.toLowerCase() // Приведение email к нижнему регистру
 			return true
-        },
-        
-		
+		},
+
 		jwt({ token, user }) {
 			if (user) token.role = (user as any).role
 			return token
 		},
 		async session({ session }) {
 			await dbConnect()
-             if (session.user && session.user.email) {
-								session.user.email = session.user.email.toLowerCase() // Приведение к нижнему регистру
-							}
-			
+			if (session.user && session.user.email) {
+				session.user.email = session.user.email.toLowerCase() // Приведение к нижнему регистру
+			}
+
 			//   console.log('Session', session)
 			const user = await User.findOne({ email: session.user?.email })
 			//  console.log('user', user)
