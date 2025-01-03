@@ -22,7 +22,8 @@ export const postValidationSchema = Joi.object().keys({
 		'any.required': errorMessages.INVALID_SLUG,
 	}),
 
-	meta: Joi.string().required().messages({
+	// meta: Joi.string().required().messages({
+	meta: Joi.string().messages({
 		'string.empty': errorMessages.INVALID_META,
 		'any.required': errorMessages.INVALID_META,
 	}),
