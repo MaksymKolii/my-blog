@@ -23,10 +23,10 @@ export const postValidationSchema = Joi.object().keys({
 	}),
 
 	// meta: Joi.string().required().messages({
-	meta: Joi.string().messages({
-		'string.empty': errorMessages.INVALID_META,
-		'any.required': errorMessages.INVALID_META,
-	}),
+	// meta: Joi.string().messages({
+	// 	'string.empty': errorMessages.INVALID_META,
+	// 	'any.required': errorMessages.INVALID_META,
+	// }),
 	tags: Joi.array().items(Joi.string()).messages({
 		'array.base': errorMessages.INVALID_TAGS, // Когда tags не массив
 		'string.base': errorMessages.INVALID_TAGS, // Когда элементы не строки
