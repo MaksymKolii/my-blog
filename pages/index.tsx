@@ -1,5 +1,6 @@
 import InfiniteScrollPosts from '@/components/common/InfiniteScrollPosts'
 import DefaultLayout from '@/components/layout/DefaultLayout'
+import useAuth from '@/hooks/useAuth'
 import { formatPosts, readPostsFromDb } from '@/lib/utils'
 import { filterPosts } from '@/utils/helper'
 import { PostDetail, UserProfile } from '@/utils/types'
@@ -16,8 +17,7 @@ type IProps = InferGetServerSidePropsType<typeof getServerSideProps>
 const Home: NextPage<IProps> = ({ posts }) => {
 	const [postsToRender, setPostsToRender] = useState(posts)
 	const [hasMorePosts, setHasMorePosts] = useState(posts.length >= limit)
-	const { data } = useSession()
-	const profile = data?.user as UserProfile
+	const profile = useAuth()
 	const isAdmin = profile && profile.role === 'admin'
 
 	const fetchMorePosts = async () => {

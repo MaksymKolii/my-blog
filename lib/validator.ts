@@ -5,7 +5,7 @@ export const errorMessages = {
 	REQUIRED_TITLE: 'Title is are required field!',
 	INVALID_TAGS: 'Tags must be array of strings!',
 	INVALID_SLUG: 'Slug is missing!',
-	INVALID_META: 'Meta description is missing!',
+	// INVALID_META: 'Meta description is missing!',
 	INVALID_CONTENT: 'Post content is missing!',
 }
 export const postValidationSchema = Joi.object().keys({

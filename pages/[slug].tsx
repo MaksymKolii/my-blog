@@ -10,14 +10,19 @@ import {
 import parse from 'html-react-parser'
 import Image from 'next/image'
 import dateFormat from 'dateformat'
+import useAuth from '@/hooks/useAuth'
+import CommentForm from '@/components/common/CommentForm'
+import { GitHubAuthButton } from '@/components/button'
 
 type ISinglePost = InferGetStaticPropsType<typeof getStaticProps>
 
 const SinglePost: NextPage<ISinglePost> = ({ post }) => {
+	const userProfile = useAuth()
+
 	const { title, content, meta, tags, slug, thumbnail, createdAt } = post
 	return (
 		<DefaultLayout title={title} desc={meta}>
-			<div className='pb-20'>
+			<div>
 				{thumbnail ? (
 					<div className='relative aspect-video'>
 						<Image src={thumbnail} alt={title} fill priority />
@@ -37,6 +42,19 @@ const SinglePost: NextPage<ISinglePost> = ({ post }) => {
 
 				<div className=' prose prose-lg dark:prose-invert max-w-full mx-auto  '>
 					{parse(content)}
+				</div>
+				{/*  comment form */}
+				<div className='py-20'>
+					{userProfile ? (
+						<CommentForm />
+					) : (
+						<div className='flex flex-col items-end space-y-2'>
+							<h3 className='text-secondary-dark font-semibold text-xl dark:text-secondary-light'>
+								Log in to add comment
+							</h3>
+							<GitHubAuthButton />
+						</div>
+					)}
 				</div>
 			</div>
 		</DefaultLayout>
@@ -94,7 +112,7 @@ export const getStaticProps: GetStaticProps<
 					createdAt: createdAt.toString(),
 				},
 			},
-			revalidate:60
+			revalidate: 60,
 		}
 	} catch (error) {
 		return { notFound: true }
