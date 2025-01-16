@@ -20,6 +20,7 @@ import axios from 'axios'
 import SEOForm, { type SeoResult } from './SeoForm'
 import ThumbnailSelector from './ThumbnailSelector'
 import ActionButton from '../common/ActionButton'
+import useEditorConfig from '@/hooks/useEditorConfig'
 
 export interface FinalPost extends SeoResult {
 	id?:string
@@ -41,7 +42,7 @@ const TipTapEditor: FC<ITipTapEditor> = ({
 	btnTitle = 'Submit',
 	initialValue,
 }): JSX.Element => {
-	const [selectionRange, setSelectionRange] = useState<Range>()
+	// const [selectionRange, setSelectionRange] = useState<Range>()
 	const [showGallery, setShowGallery] = useState(false)
 	const [uploading, setUploading] = useState(false)
 	const [images, setImages] = useState<{ src: string }[]>([])
@@ -78,50 +79,50 @@ const TipTapEditor: FC<ITipTapEditor> = ({
 			alert('Image upload failed. Please try again.')
 		}
 	}
+	const { editor, selectionRange } = useEditorConfig({ placeholder: 'Write something ...' })
+	// const editor = useEditor({
+	// 	extensions: [
+	// 		StarterKit,
+	// 		Underline,
+	// 		Placeholder.configure({ placeholder: 'Write something ...' }),
+	// 		Link.configure({
+	// 			autolink: false,
+	// 			linkOnPaste: false,
+	// 			openOnClick: false,
+	// 			HTMLAttributes: {
+	// 				target: '',
+	// 			},
+	// 		}),
+	// 		Youtube.configure({
+	// 			width: 840,
+	// 			height: 472.5,
+	// 			HTMLAttributes: {
+	// 				class: 'mx-auto rounded',
+	// 			},
+	// 		}),
+	// 		TipTapImage.configure({ HTMLAttributes: { class: 'mx-auto' } }),
+	// 	],
+	// 	editorProps: {
+	// 		//* used to change selected text, handleClick just take inside selectionRange and didnt do anything, but useEffect below do job
+	// 		handleClick(view, position, event) {
+	// 			const { state } = view
+	// 			const selectionRange = getMarkRange(
+	// 				state.doc.resolve(position),
+	// 				state.schema.marks.link
+	// 			)
+	// 			if (selectionRange) setSelectionRange(selectionRange)
+	// 		},
 
-	const editor = useEditor({
-		extensions: [
-			StarterKit,
-			Underline,
-			Placeholder.configure({ placeholder: 'Write something ...' }),
-			Link.configure({
-				autolink: false,
-				linkOnPaste: false,
-				openOnClick: false,
-				HTMLAttributes: {
-					target: '',
-				},
-			}),
-			Youtube.configure({
-				width: 840,
-				height: 472.5,
-				HTMLAttributes: {
-					class: 'mx-auto rounded',
-				},
-			}),
-			TipTapImage.configure({ HTMLAttributes: { class: 'mx-auto' } }),
-		],
-		editorProps: {
-			//* used to change selected text, handleClick just take inside selectionRange and didnt do anything, but useEffect below do job
-			handleClick(view, position, event) {
-				const { state } = view
-				const selectionRange = getMarkRange(
-					state.doc.resolve(position),
-					state.schema.marks.link
-				)
-				if (selectionRange) setSelectionRange(selectionRange)
-			},
+	// 		attributes: {
+	// 			class:
+	// 				'prose prose-lg focus:outline-none dark:prose-invert max-w-full mx-auto h-full',
+	// 		},
+	// 	},
+	// 	// content: '<p>Start write here!  🌎️</p>',
 
-			attributes: {
-				class:
-					'prose prose-lg focus:outline-none dark:prose-invert max-w-full mx-auto h-full',
-			},
-		},
-		// content: '<p>Start write here!  🌎️</p>',
-
-		// здесь добавьте immediatelyRender: false из GPT Ошибка, с которой вы столкнулись, связана с серверным рендерингом (SSR) в библиотеке Tiptap, которая часто используется для работы с текстовыми редакторами в React или других фреймворках. Эта ошибка возникает из-за того, что рендеринг происходит слишком рано на сервере, что вызывает несоответствие с рендерингом на клиенте, особенно если вы используете Tiptap в среде с SSR.
-	 immediatelyRender: false,
-	})
+	// 	// здесь добавьте immediatelyRender: false из GPT Ошибка, с которой вы столкнулись, связана с серверным рендерингом (SSR) в библиотеке Tiptap, которая часто используется для работы с текстовыми редакторами в React или других фреймворках. Эта ошибка возникает из-за того, что рендеринг происходит слишком рано на сервере, что вызывает несоответствие с рендерингом на клиенте, особенно если вы используете Tiptap в среде с SSR.
+	//  immediatelyRender: false,
+	// })
 
 	const handleImageSelection = (res: ImageSelectionResult) => {
 		editor
