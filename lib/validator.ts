@@ -1,4 +1,5 @@
 import Joi, { ObjectSchema } from 'joi'
+import { isValidObjectId } from 'mongoose'
 
 export const errorMessages = {
 	EMPTY_TITLE: 'Title can Not be empty!',
@@ -32,6 +33,23 @@ export const postValidationSchema = Joi.object().keys({
 		'string.base': errorMessages.INVALID_TAGS, // Когда элементы не строки
 	}),
 })
+
+export const commentValidationSchema = Joi.object().keys({
+	belongsTo: Joi.string()
+		// .required()
+		.custom((value, helper) => {
+			if (!isValidObjectId(value)) return helper.error('any.invalid')
+			return true
+		})
+		.messages({
+			'any.invalid': 'Post id should be presented as belongsTo!',
+			'string.empty': 'Invalid belongsTo!',
+		}),
+	content: Joi.string().required().messages({
+		'string.empty': 'Content is missing inside comment!',
+	}),
+})
+
 export const validateSchema = (schema: ObjectSchema, value: any) => {
 	const { error } = schema.validate(value, {
 		errors: { label: 'key', wrap: { label: false, array: false } },

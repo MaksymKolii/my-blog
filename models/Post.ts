@@ -7,7 +7,7 @@ export interface PostModelSchema {
 	slug: string
 	content: string
 	tags: string[]
-	thumbnail: { url: string; public_id: string }
+	thumbnail?: { url: string; public_id: string }
 	meta: string
 	author: ObjectId
 	createdAt: Date

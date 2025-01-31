@@ -31,6 +31,7 @@
     "nanoid": "^5.0.8",
     "next": "^14.2.7",
     "next-auth": "^4.24.10",
+    "npm": "^11.0.0",
     "nprogress": "^0.2.0",
     "react": "^18",
     "react-dom": "^18",

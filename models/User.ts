@@ -36,7 +36,9 @@ const UserSchema = new Schema<UserModelSchema>(
         }
 	},
 	{ versionKey: false, timestamps: true }
-)
-const User = models?.User || model('User', UserSchema)
 
-export default User as Model<UserModelSchema>
+
+)
+	const User = models?.User || model('User', UserSchema)
+
+	export default User as Model<UserModelSchema>
