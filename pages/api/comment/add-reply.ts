@@ -19,8 +19,8 @@ const handler: NextApiHandler = (req, res) => {
 	}
 }
 const addReplyToComment: NextApiHandler = async (req, res) => {
-	// const user = await isAuth(req, res)
-	// if (!user) return res.status(403).json({ error: 'Unauthorized request !' })
+	const user = await isAuth(req, res)
+	if (!user) return res.status(403).json({ error: 'Unauthorized request !' })
 
 	const error = validateSchema(commentValidationSchema, req.body)
     if (error) return res.status(422).json({ error })
@@ -40,7 +40,7 @@ const addReplyToComment: NextApiHandler = async (req, res) => {
     if (!chiefComment) return res.status(401).json({ error: 'Comment not found !' })
     
     const replyComment = new Comment({
-			owner: '67752bd049cfe36ff83ebc2c',
+			owner: user.id,
 			repliedTo,
 			content: req.body.content,
 		})
