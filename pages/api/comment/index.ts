@@ -1,5 +1,5 @@
 import dbConnect from '@/lib/dbConnect'
-import { isAuth } from '@/lib/utils'
+import { formatComment, isAuth } from '@/lib/utils'
 import { commentValidationSchema, validateSchema } from '@/lib/validator'
 import Comment from '@/models/Comment'
 import Post from '@/models/Post'
@@ -15,11 +15,49 @@ const handler: NextApiHandler = (req, res) => {
 			return createNewComment(req, res)
 		case 'DELETE':
 			return removeComment(req, res)
+		case 'PATCH':
+			return updateComment(req, res)
+		case 'GET':
+			return readComments(req, res)
 
 		default:
 			res.status(404).send('Not found')
 	}
 }
+
+const readComments: NextApiHandler = async (req, res) => {
+	const user = await isAuth(req, res)
+
+	const { belongsTo } = req.query
+	if (!belongsTo || !isValidObjectId(belongsTo)) {
+		return res.status(422).json({ error: 'Invalid request!' })
+	}
+
+	// Ищем комментарий и заполняем поля owner и replies
+	const comments = await Comment.findOne({ belongsTo })
+		.populate({
+			path: 'owner',
+			select: 'name avatar',
+		})
+		.populate({
+			path: 'replies',
+			populate: {
+				path: 'owner',
+				select: 'name avatar',
+			},
+		})
+
+	if (!comments) return res.json({ comment: comments })
+	
+
+	const formattedComment = {
+		...formatComment(comments, user),
+		replies: comments.replies?.map((c: any) => formatComment(c, user)),
+	}
+
+	res.json({ comments: formattedComment })
+}
+
 const createNewComment: NextApiHandler = async (req, res) => {
 	const user = await isAuth(req, res)
 	if (!user) return res.status(403).json({ error: 'Unauthorized request !' })
@@ -38,7 +76,11 @@ const createNewComment: NextApiHandler = async (req, res) => {
 	const comment = new Comment({
 		content,
 		belongsTo,
-		owner: user.id,
+		// Maksym75 user id
+		// owner: '67752bd049cfe36ff83ebc2c',
+		// maksymKolii
+		// owner: '67757df1073a7b9a95ac1686',
+		 owner: user.id,
 		chiefComment: true,
 	})
 	await comment.save()
@@ -80,19 +122,24 @@ const createNewComment: NextApiHandler = async (req, res) => {
 // 	res.json({ removed: true })
 // }
 
-
 const removeComment: NextApiHandler = async (req, res) => {
-	// const user = await isAuth(req, res)
-	// if (!user) return res.status(403).json({ error: 'Unauthorized request!' })
+	const user = await isAuth(req, res)
+	if (!user) return res.status(403).json({ error: 'Unauthorized request!' })
 
 	const { commentId } = req.query // Используем query-параметры
+
 	if (typeof commentId !== 'string' || !isValidObjectId(commentId)) {
 		return res.status(422).json({ error: 'Invalid request!' })
 	}
 
 	const comment = await Comment.findOne({
 		_id: commentId,
-		owner: '67752bd049cfe36ff83ebc2c', // Замените на user.id после добавления аутентификации
+		// Замените на user.id после добавления аутентификации
+		// Maksym75 user id
+		// owner: '67752bd049cfe36ff83ebc2c',
+		// maksymKolii
+		// owner: '67757df1073a7b9a95ac1686',
+		owner: user.id,
 	})
 	if (!comment) return res.status(404).json({ error: 'Comment not found!' })
 
@@ -117,6 +164,33 @@ const removeComment: NextApiHandler = async (req, res) => {
 	// Удаляем сам комментарий
 	await Comment.deleteOne({ _id: commentId })
 	res.json({ removed: true })
+}
+
+const updateComment: NextApiHandler = async (req, res) => {
+	const user = await isAuth(req, res)
+	if (!user) return res.status(403).json({ error: 'Unauthorized request!' })
+
+	const error = validateSchema(commentValidationSchema, req.body)
+	if (error) return res.status(422).json({ error })
+
+	const { commentId } = req.query
+	if (typeof commentId !== 'string' || !isValidObjectId(commentId)) {
+		return res.status(422).json({ error: 'Invalid request!' })
+	}
+
+	const comment = await Comment.findOne({
+		_id: commentId,
+		// Maksym75 user id
+		// owner: '67752bd049cfe36ff83ebc2c',
+		// maksymKolii
+		//owner: '67757df1073a7b9a95ac1686',
+		 owner: user.id,
+	})
+	if (!comment) return res.status(404).json({ error: 'Comment not found!' })
+
+	comment.content = req.body.content
+	await comment.save()
+	res.json(comment)
 }
 
 export default handler

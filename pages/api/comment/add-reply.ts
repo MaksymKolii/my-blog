@@ -39,11 +39,15 @@ const addReplyToComment: NextApiHandler = async (req, res) => {
 
     if (!chiefComment) return res.status(401).json({ error: 'Comment not found !' })
     
-    const replyComment = new Comment({
-			owner: user.id,
-			repliedTo,
-			content: req.body.content,
-		})
+	const replyComment = new Comment({
+		// Maksym75 user id
+		 // owner: '67752bd049cfe36ff83ebc2c',
+		// maksymKolii
+		// owner: '67757df1073a7b9a95ac1686',
+		 owner: user.id,
+		repliedTo,
+		content: req.body.content,
+	})
     
     if (chiefComment.replies) chiefComment.replies = [...chiefComment.replies, replyComment._id]
     

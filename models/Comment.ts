@@ -10,7 +10,7 @@ export interface CommentModelSchema {
 	replies?: ObjectId[]
 	repliedTo?: ObjectId
 	chiefComment?: boolean
-	createdAt?: string
+	createdAt: string
 }
 
 const CommentSchema = new Schema<CommentModelSchema>(

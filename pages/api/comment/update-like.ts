@@ -1,6 +1,5 @@
 import dbConnect from '@/lib/dbConnect'
 import { isAuth } from '@/lib/utils'
-import { commentValidationSchema, validateSchema } from '@/lib/validator'
 import Comment from '@/models/Comment'
 
 import { isValidObjectId, Schema, Types } from 'mongoose'
@@ -34,8 +33,11 @@ const updateLike: NextApiHandler = async (req, res) => {
 	const oldLikes = comment.likes || []
 
 	const likedBy = new Types.ObjectId(
-		// '67752bd049cfe36ff83ebc2c'
-		user.id
+		// Maksym75 user id
+		 //'67752bd049cfe36ff83ebc2c',
+		// maksymKolii
+		 // '67757df1073a7b9a95ac1686',
+		 user.id
 	) as unknown as Schema.Types.ObjectId
 
 	// like and unLike
