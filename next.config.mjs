@@ -27,6 +27,12 @@ const nextConfig = {
 				port: '',
 				pathname: '**', // разрешить все пути на этом хосте
 			},
+			{
+				protocol: 'https',
+				hostname: 'avatars.githubusercontent.com', // ✅ Добавлено
+				port: '',
+				pathname: '**',
+			},
 		],
 	},
 }

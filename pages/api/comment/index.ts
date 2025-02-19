@@ -3,6 +3,7 @@ import { formatComment, isAuth } from '@/lib/utils'
 import { commentValidationSchema, validateSchema } from '@/lib/validator'
 import Comment from '@/models/Comment'
 import Post from '@/models/Post'
+import { CommentResponse } from '@/utils/types'
 import { isValidObjectId, Schema, Types } from 'mongoose'
 
 import { NextApiHandler } from 'next'
@@ -34,7 +35,7 @@ const readComments: NextApiHandler = async (req, res) => {
 	}
 
 	// Ищем комментарий и заполняем поля owner и replies
-	const comments = await Comment.findOne({ belongsTo })
+	const comments = await Comment.find({ belongsTo })
 		.populate({
 			path: 'owner',
 			select: 'name avatar',
@@ -50,10 +51,11 @@ const readComments: NextApiHandler = async (req, res) => {
 	if (!comments) return res.json({ comment: comments })
 	
 
-	const formattedComment = {
-		...formatComment(comments, user),
-		replies: comments.replies?.map((c: any) => formatComment(c, user)),
-	}
+	const formattedComment: CommentResponse[] = comments.map(comment => ({
+		...formatComment(comment, user),
+		replies: comment.replies?.map((c: any) => formatComment(c, user))}
+		
+	))
 
 	res.json({ comments: formattedComment })
 }
@@ -84,7 +86,9 @@ const createNewComment: NextApiHandler = async (req, res) => {
 		chiefComment: true,
 	})
 	await comment.save()
-	res.status(201).json(comment)
+	const commentWithOwner = await comment.populate('owner')
+	res.status(201).json({ comment: formatComment(commentWithOwner, user) })
+
 }
 
 // const removeComment: NextApiHandler = async (req, res) => {
