@@ -20,6 +20,23 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
 
 	const userProfile = useAuth()
 
+	const insertNewReplyComments = (reply: CommentResponse) => {
+		if (!comments) return
+		let updatedComments = [...comments]
+
+		const chiefCommentIndex = updatedComments.findIndex(
+			({ id }) => id === reply.repliedTo
+		)
+
+		const { replies } = updatedComments[chiefCommentIndex]
+		if (replies) {
+			updatedComments[chiefCommentIndex].replies = [...replies, reply]
+		} else {
+			updatedComments[chiefCommentIndex].replies = [reply]
+		}
+		setComments([...updatedComments])
+	}
+
 	const handleNewCommentSubmit = async (content: string) => {
 		setSubmitting(true)
 		try {
@@ -36,14 +53,15 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
 
 		setSubmitting(false)
 	}
-	const handleReplaySubmit = (replyComment: { content: string; repliedTo: string }) => {
+	const handleReplaySubmit = (replyComment: {
+		content: string
+		repliedTo: string
+	}) => {
 		axios
-			 .post('/api/comment/add-reply', replyComment)
-			.then(({ data }) => console.log('data.comment', data.comment))
+			.post('/api/comment/add-reply', replyComment)
+			.then(({ data }) => insertNewReplyComments(data.comment))
 			.catch(err => console.log(err))
-
-	 }
-	
+	}
 
 	useEffect(() => {
 		axios(`/api/comment?belongsTo=${belongsTo}`)
@@ -66,19 +84,41 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
 				</div>
 			)}
 
-			
-			{comments?.map((comment) => {
+			{comments?.map(comment => {
+				const { replies } = comment
 				return (
-					<CommentCard
-						key={comment.id}
-						comment={comment}
-						onReplySubmit={content =>
-							handleReplaySubmit({ content, repliedTo: comment.id })
-						}
-						onUpdateSubmit={cont => {
-							console.log('Update: - ', cont)
-						}}
-					/>
+					// <div key={comment.id}>
+					<>
+						<CommentCard
+							key={comment.id}
+							comment={comment}
+							onReplySubmit={content =>
+								handleReplaySubmit({ content, repliedTo: comment.id })
+							}
+							onUpdateSubmit={cont => {
+								console.log('Update: - ', cont)
+							}}
+						/>
+						{replies?.length ? (
+							<div className=' w-[93%] ml-auto space-y-3'>
+								<h1 className='text-secondary-dark mb-3'>Replies </h1>
+								{replies?.map(reply => {
+									return (
+										<CommentCard
+											key={reply.id}
+											comment={reply}
+											onReplySubmit={content =>
+												handleReplaySubmit({ content, repliedTo: comment.id })
+											}
+											onUpdateSubmit={cont => {
+												console.log('Update: - ', cont)
+											}}
+										/>
+									)
+								})}
+							</div>
+						) : null}
+					</>
 				)
 			})}
 		</div>
