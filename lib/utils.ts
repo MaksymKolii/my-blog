@@ -106,20 +106,43 @@ export const formatComment = (
 	comment: CommentModelSchema,
 	user?: UserProfile
 ): CommentResponse => {
+	const isOwnerPopulated = (
+		val: ObjectId | { _id: ObjectId; name: string; avatar?: string }
+	): val is { _id: ObjectId; name: string; avatar?: string } =>
+		typeof val === 'object' && val !== null && 'name' in val && 'avatar' in val
 
-const owner =
-	comment.owner as any
+		const owner = isOwnerPopulated(comment.owner)
+		? {
+				id: comment.owner._id.toString(),
+				name: comment.owner.name ?? 'Unknown',
+				avatar: comment.owner.avatar ?? '',
+		  }
+		: null
+
 	return {
 		id: comment._id.toString(),
 		content: comment.content,
 		likes: (comment.likes ?? []).length,
 		chiefComment: comment.chiefComment ?? false,
 		createdAt: comment.createdAt?.toLocaleString(),
-		// owner,
-		 owner: { id: owner._id, name: owner.name, avatar: owner.avatar } ,
-	
+		owner,
 		repliedTo: comment?.repliedTo?.toString(),
 		likedByOwner: user ? getLikedByOwner(comment.likes ?? [], user) : false,
-	
 	}
+// const owner =
+// 	comment.owner as any
+// 	return {
+// 		id: comment._id.toString(),
+// 		content: comment.content,
+// 		likes: (comment.likes ?? []).length,
+// 		chiefComment: comment.chiefComment ?? false,
+// 		createdAt: comment.createdAt?.toLocaleString(),
+// 		// owner,
+// 		 owner: { id: owner._id, name: owner.name, avatar: owner.avatar } ,
+	
+	
+// 		repliedTo: comment?.repliedTo?.toString(),
+// 		likedByOwner: user ? getLikedByOwner(comment.likes ?? [], user) : false,
+	
+// 	}
 }
