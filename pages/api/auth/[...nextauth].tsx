@@ -17,11 +17,13 @@ const GIT_CLIENT_SECRET =
 	MODE === 'development' ? GITHUB_CLIENT_SECRET_LOCAL : GITHUB_CLIENT_SECRET
 
 export const authOptions: NextAuthOptions = {
+	secret: process.env.NEXTAUTH_SECRET,
 	providers: [
 		GithubProvider({
 			clientId: GIT_CLIENT_ID as string,
 			clientSecret: GIT_CLIENT_SECRET as string,
 			async profile(profile) {
+				// console.log('profile.login', profile)
 				console.log('profile.login', profile.login)
 				console.log('profile.email', profile.email)
 				// find out the user
