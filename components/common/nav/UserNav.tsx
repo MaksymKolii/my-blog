@@ -61,7 +61,7 @@ const UserNav: FC<IUserNav> = (props): JSX.Element => {
 			<div className='flex items-center space-x-5'>
 				<button
 					onClick={toggleTheme}
-					className='dark:text-secondary-dark text-secondary-light'
+					className='dark:text-secondary-dark  text-secondary-light  '
 				>
 					<HiLightBulb className='text-secondary-light' size={34} />
 				</button>

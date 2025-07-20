@@ -1,6 +1,6 @@
 
 
-import { FC} from 'react'
+import { FC, useCallback} from 'react'
 import { AiFillCaretDown } from 'react-icons/ai'
 import ProfileIcon from './ProfileIcon'
 
@@ -13,10 +13,13 @@ interface IProfileHead {
 
 const ProfileHead: FC<IProfileHead> = ({ lightOnly, avatar, nameInitial }): JSX.Element => {
 
+    
 
-    return <div className='flex items-center'>
+
+
+    return <div className='flex items-center '>
         {/*  image / name initial */}
-        <ProfileIcon avatar={avatar} nameInitial={nameInitial} lightOnly/>
+        <ProfileIcon  avatar={avatar} nameInitial={nameInitial} lightOnly/>
      
         {/* down icon  */}
         <AiFillCaretDown className={lightOnly? 'text-primary': 'text-primary-dark dark:text-primary' }/>
