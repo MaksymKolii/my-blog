@@ -109,7 +109,8 @@ export const formatComment = (
 	const isOwnerPopulated = (
 		val: ObjectId | { _id: ObjectId; name: string; avatar?: string }
 	): val is { _id: ObjectId; name: string; avatar?: string } =>
-		typeof val === 'object' && val !== null && 'name' in val && 'avatar' in val
+		typeof val === 'object' && val !== null && 'name' in val
+		// && 'avatar' in val
 
 		const owner = isOwnerPopulated(comment.owner)
 		? {
