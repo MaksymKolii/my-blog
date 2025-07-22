@@ -1,5 +1,5 @@
 import ModalContainer, {
-	ModalContainerProps,
+  ModalContainerProps,
 } from '@/components/common/ModalContainer'
 import { ChangeEventHandler, FC, useCallback, useState } from 'react'
 import Image from 'next/image'
@@ -9,14 +9,14 @@ import ActionButton from '@/components/common/ActionButton'
 import { AiOutlineCloudUpload } from 'react-icons/ai'
 
 export interface ImageSelectionResult {
-	src: string
-	altTextInterface: string
+  src: string
+  altTextInterface: string
 }
 interface IGalleryModal extends ModalContainerProps {
-	images:{src:string}[]
-	uploading?:boolean
-	onFileSelect(image: File): void
-	onSelect(result: ImageSelectionResult): void
+  images: { src: string }[]
+  uploading?: boolean
+  onFileSelect(image: File): void
+  onSelect(result: ImageSelectionResult): void
 }
 
 // const images = [
@@ -95,110 +95,109 @@ interface IGalleryModal extends ModalContainerProps {
 // ]
 
 const GalleryModal: FC<IGalleryModal> = ({
-	visible,
-	images,
-	uploading,
-	onFileSelect,
-	onSelect,
-	onClose,
+  visible,
+  images,
+  uploading,
+  onFileSelect,
+  onSelect,
+  onClose,
 }): JSX.Element => {
-	const [selectedImage, setSelectedImage] = useState('')
-	const [altText, setAltText] = useState('')
+  const [selectedImage, setSelectedImage] = useState('')
+  const [altText, setAltText] = useState('')
 
-	const handleCloseImage = useCallback(() => onClose && onClose(), [onClose])
+  const handleCloseImage = useCallback(() => onClose && onClose(), [onClose])
 
-	const handleOnImageChange: ChangeEventHandler<HTMLInputElement> = ({
-		target,
-	}) => {
-		const { files } = target
-		if (!files) return
-		const file = files[0]
-		// console.log("files",files);
-	
-		if (!file.type.startsWith('image')) return handleCloseImage()
-			// console.log(file);
-			onFileSelect(file)
-	}
+  const handleOnImageChange: ChangeEventHandler<HTMLInputElement> = ({
+    target,
+  }) => {
+    const { files } = target
+    if (!files) return
+    const file = files[0]
+    // console.log("files",files);
 
-	const handleSelection = () => {
-		if (!selectedImage) return handleCloseImage()
-		onSelect({ src: selectedImage, altTextInterface: altText })
-		handleCloseImage()
-	}
+    if (!file.type.startsWith('image')) return handleCloseImage()
+    // console.log(file);
+    onFileSelect(file)
+  }
 
-	return (
-		<ModalContainer visible={visible} onClose={onClose}>
-			<div className='max-w-4xl p-2 bg-primary-dark dark:bg-primary rounded'>
-				<div className='flex space-x-2'>
-					{/* Gallery */}
-					<div className='basis-[75%] max-h-[450px] overflow-y-auto custom-scroll-bar'>
-						{/* передаем src из Gallery.tsx -( onSelect(src)) который находим пр срабатывании onClick на div-е в  Image.tsx. */}
-						<Gallery
-							images={images}
-							uploading={uploading}
-							selectedImage={selectedImage}
-							onSelect={src => setSelectedImage(src)}
-							
-						/>
-					</div>
+  const handleSelection = () => {
+    if (!selectedImage) return handleCloseImage()
+    onSelect({ src: selectedImage, altTextInterface: altText })
+    handleCloseImage()
+  }
 
-					{/* Image selection and upload */}
-					<div className='basis-1/4 '>
-						<div className='space-y-4'>
-							<div>
-								<input
-									onChange={handleOnImageChange}
-									hidden
-									type='file'
-									id='image-input'
-								/>
-								<label htmlFor='image-input'>
-									<div className='w-full border border-action text-action flex items-center justify-center space-x-2 p-2 cursor-pointer rounded'>
-										<AiOutlineCloudUpload />
-										<span className='px-2'>Upload image</span>
-									</div>
-								</label>
-							</div>
-							{
-								selectedImage ? (
-									<>
-										<textarea
-											className='w-full focus:outline-none  resize-none rounded bg-transparent border-2 focus:ring-1 border-secondary-dark text-primary dark:text-primary-dark px-1 h-32'
-											placeholder='alt text'
-											value={altText}
-											onChange={({ target }) => setAltText(target.value)}
-										></textarea>
-										<ActionButton
-											onClick={handleSelection}
-											title='Select'
-											// busy={true}
-										/>
+  return (
+    <ModalContainer visible={visible} onClose={onClose}>
+      <div className="max-w-4xl p-2 bg-primary-dark dark:bg-primary rounded">
+        <div className="flex space-x-2">
+          {/* Gallery */}
+          <div className="basis-[75%] max-h-[450px] overflow-y-auto custom-scroll-bar">
+            {/* передаем src из Gallery.tsx -( onSelect(src)) который находим пр срабатывании onClick на div-е в  Image.tsx. */}
+            <Gallery
+              images={images}
+              uploading={uploading}
+              selectedImage={selectedImage}
+              onSelect={(src) => setSelectedImage(src)}
+            />
+          </div>
 
-										{/* Configure bg Image in tailwind.config    backgroundImage: {
+          {/* Image selection and upload */}
+          <div className="basis-1/4 ">
+            <div className="space-y-4">
+              <div>
+                <input
+                  onChange={handleOnImageChange}
+                  hidden
+                  type="file"
+                  id="image-input"
+                />
+                <label htmlFor="image-input">
+                  <div className="w-full border border-action text-action flex items-center justify-center space-x-2 p-2 cursor-pointer rounded">
+                    <AiOutlineCloudUpload />
+                    <span className="px-2">Upload image</span>
+                  </div>
+                </label>
+              </div>
+              {
+                selectedImage ? (
+                  <>
+                    <textarea
+                      className="w-full focus:outline-none  resize-none rounded bg-transparent border-2 focus:ring-1 border-secondary-dark text-primary dark:text-primary-dark px-1 h-32"
+                      placeholder="alt text"
+                      value={altText}
+                      onChange={({ target }) => setAltText(target.value)}
+                    ></textarea>
+                    <ActionButton
+                      onClick={handleSelection}
+                      title="Select"
+                      // busy={true}
+                    />
+
+                    {/* Configure bg Image in tailwind.config    backgroundImage: {
       "png-pattern":"url('/empty-bg.jpg')",
    
     }, & now use like Background */}
-										<div className='relative aspect-video bg-png-pattern'>
-											<Image
-												src={selectedImage}
-												layout='fill'
-												alt='selected'
-												objectFit='contain'
-												// style={{ objectFit: 'contain' }}
-											/>
-										</div>
-									</>
-								) : null
-								// 	<div className='basis-1/4 p-1 aspect-square flex flex-col items-center justify-center bg-secondary-light text-primary-dark rounded animate-pulse'>
-								// 	<BsCardImage size={60} /><p>Select image</p>
-								// </div>
-							}
-						</div>
-					</div>
-				</div>
-			</div>
-		</ModalContainer>
-	)
+                    <div className="relative aspect-video bg-png-pattern">
+                      <Image
+                        src={selectedImage}
+                        layout="fill"
+                        alt="selected"
+                        objectFit="contain"
+                        // style={{ objectFit: 'contain' }}
+                      />
+                    </div>
+                  </>
+                ) : null
+                // 	<div className='basis-1/4 p-1 aspect-square flex flex-col items-center justify-center bg-secondary-light text-primary-dark rounded animate-pulse'>
+                // 	<BsCardImage size={60} /><p>Select image</p>
+                // </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </ModalContainer>
+  )
 }
 
 export default GalleryModal

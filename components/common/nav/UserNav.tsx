@@ -13,69 +13,69 @@ import useDarkMode from '@/hooks/userDarkMode'
 
 interface IUserNav {}
 const defaultOptions: dropDownOptions = [
-	{
-		label: 'Logout',
-		async onClick() {
-			await signOut()
-		},
-	},
+  {
+    label: 'Logout',
+    async onClick() {
+      await signOut()
+    },
+  },
 ]
 
 const UserNav: FC<IUserNav> = (props): JSX.Element => {
-	const router = useRouter()
-	const { data, status } = useSession()
-	const isAuth = status === 'authenticated'
-	const profile = data?.user as UserProfile | undefined
-	const isAdmin = profile && profile.role === 'admin'
+  const router = useRouter()
+  const { data, status } = useSession()
+  const isAuth = status === 'authenticated'
+  const profile = data?.user as UserProfile | undefined
+  const isAdmin = profile && profile.role === 'admin'
 
-	//console.log('{ data, status } = useSession()', data, 'Status -', status)
-	const {toggleTheme } =useDarkMode()
+  //console.log('{ data, status } = useSession()', data, 'Status -', status)
+  const { toggleTheme } = useDarkMode()
 
-	// const handleLoginWithGithub = async () => {
-	// 	await signIn('github')
-	// }
+  // const handleLoginWithGithub = async () => {
+  // 	await signIn('github')
+  // }
 
-	const dropDownOptions: dropDownOptions = isAdmin
-		? [
-				{
-					label: 'Dashboard',
-					onClick() {
-						router.push('/admin')
-					},
-				},
-				...defaultOptions,
-		  ]
-		: defaultOptions
-	return (
-		<div
-			className='flex items-center justify-between bg-primary-dark p-3 
+  const dropDownOptions: dropDownOptions = isAdmin
+    ? [
+        {
+          label: 'Dashboard',
+          onClick() {
+            router.push('/admin')
+          },
+        },
+        ...defaultOptions,
+      ]
+    : defaultOptions
+  return (
+    <div
+      className="flex items-center justify-between bg-primary-dark p-3 
    
     
-    '
-		>
-			{/* Logo */}
-			<Link className='flex space-x-2 text-highlight-dark' href='/'>
-				<Logo className='fill-highlight-dark' />
-				<span className='text-xl font-semibold'>{APP_NAME}</span>
-			</Link>
-			<div className='flex items-center space-x-5'>
-				<button
-					onClick={toggleTheme}
-					className='dark:text-secondary-dark  text-secondary-light  '
-				>
-					<HiLightBulb className='text-secondary-light' size={34} />
-				</button>
-				{isAuth ? (
-					<DropdownOptions
-						options={dropDownOptions}
-						head={<ProfileHead nameInitial='N' lightOnly />}
-					/>
-				) : (
-					<GitHubAuthButton lightOnly />
-				)}
-			</div>
-		</div>
-	)
+    "
+    >
+      {/* Logo */}
+      <Link className="flex space-x-2 text-highlight-dark" href="/">
+        <Logo className="fill-highlight-dark" />
+        <span className="text-xl font-semibold">{APP_NAME}</span>
+      </Link>
+      <div className="flex items-center space-x-5">
+        <button
+          onClick={toggleTheme}
+          className="dark:text-secondary-dark  text-secondary-light  "
+        >
+          <HiLightBulb className="text-secondary-light" size={34} />
+        </button>
+        {isAuth ? (
+          <DropdownOptions
+            options={dropDownOptions}
+            head={<ProfileHead nameInitial="N" lightOnly />}
+          />
+        ) : (
+          <GitHubAuthButton lightOnly />
+        )}
+      </div>
+    </div>
+  )
 }
 
 export default UserNav

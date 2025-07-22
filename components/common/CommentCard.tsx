@@ -1,14 +1,14 @@
-import { FC, ReactNode, useState } from "react";
-import ProfileIcon from "./ProfileIcon";
+import { FC, ReactNode, useState } from 'react'
+import ProfileIcon from './ProfileIcon'
 // import parse from 'html-react-parser'
-import dateFormat from "dateformat";
+import dateFormat from 'dateformat'
 import {
   BsFillReplyAllFill,
   BsFillTrashFill,
   BsPencilSquare,
-} from "react-icons/bs";
-import CommentForm from "./CommentForm";
-import { CommentResponse } from "@/utils/types";
+} from 'react-icons/bs'
+import CommentForm from './CommentForm'
+import { CommentResponse } from '@/utils/types'
 
 // interface CommentOwnerProfile {
 // 	name: string
@@ -16,12 +16,12 @@ import { CommentResponse } from "@/utils/types";
 // }
 
 interface ICommentCard {
-  comment: CommentResponse;
+  comment: CommentResponse
   // profile: CommentOwnerProfile
   // date: string
   // content: string
-  onUpdateSubmit?(content: string): void;
-  onReplySubmit?(content: string): void;
+  onUpdateSubmit?(content: string): void
+  onReplySubmit?(content: string): void
 }
 
 const CommentCard: FC<ICommentCard> = ({
@@ -32,14 +32,14 @@ const CommentCard: FC<ICommentCard> = ({
   onUpdateSubmit,
   onReplySubmit,
 }): JSX.Element => {
-  const { owner, content, createdAt } = comment;
+  const { owner, content, createdAt } = comment
 
-  const isDeleted = !owner;
-  const name = owner?.name ?? "Deleted user";
-  const avatar = owner?.avatar;
+  const isDeleted = !owner
+  const name = owner?.name ?? 'Deleted user'
+  const avatar = owner?.avatar
 
-  const [showForm, setShowForm] = useState(false);
-  const [initialState, setInitialState] = useState("");
+  const [showForm, setShowForm] = useState(false)
+  const [initialState, setInitialState] = useState('')
   // if (!owner) {
   // 	// Просто не показываем ничего — но после хуков
   // 	return <></>
@@ -47,36 +47,36 @@ const CommentCard: FC<ICommentCard> = ({
 
   // const { name, avatar } = owner
   const displayReplyForm = () => {
-    setInitialState("");
-    setShowForm(true);
-  };
+    setInitialState('')
+    setShowForm(true)
+  }
   const hideReplyForm = () => {
-    setShowForm(false);
-  };
+    setShowForm(false)
+  }
   const handleOnReplyClick = () => {
-    displayReplyForm();
-  };
+    displayReplyForm()
+  }
 
   const handleOnEditClick = () => {
-    displayReplyForm();
-    setInitialState(content);
-  };
-  const handleOnDeleteClick = () => {};
+    displayReplyForm()
+    setInitialState(content)
+  }
+  const handleOnDeleteClick = () => {}
 
   const handleCommentSubmit = (comment: string) => {
     // if initialState means we want to update
     if (initialState) {
-      onUpdateSubmit && onUpdateSubmit(comment);
+      onUpdateSubmit && onUpdateSubmit(comment)
     } else {
       // means we want to reply
-      onReplySubmit && onReplySubmit(comment);
+      onReplySubmit && onReplySubmit(comment)
     }
-  };
+  }
 
   return (
     <div className="flex space-x-3">
       <ProfileIcon
-        nameInitial={comment.owner ? comment.owner.name[0].toUpperCase() : "U"}
+        nameInitial={comment.owner ? comment.owner.name[0].toUpperCase() : 'U'}
         avatar={comment.owner?.avatar}
       />
 
@@ -95,7 +95,7 @@ const CommentCard: FC<ICommentCard> = ({
         </h1>
 
         <span className="text-sm text-secondary-dark">
-          {dateFormat(createdAt, "d-mmm-yyyy")}
+          {dateFormat(createdAt, 'd-mmm-yyyy')}
         </span>
         <div className=" text-primary-dark dark:text-primary">
           {content}
@@ -129,13 +129,13 @@ const CommentCard: FC<ICommentCard> = ({
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default CommentCard;
+export default CommentCard
 interface ButtonProps {
-  children: ReactNode;
-  onClick?(): void;
+  children: ReactNode
+  onClick?(): void
 }
 
 const Button: FC<ButtonProps> = ({ children, onClick }) => {
@@ -146,5 +146,5 @@ const Button: FC<ButtonProps> = ({ children, onClick }) => {
     >
       {children}
     </button>
-  );
-};
+  )
+}

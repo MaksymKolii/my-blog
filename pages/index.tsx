@@ -15,68 +15,68 @@ const inter = Inter({ subsets: ['latin'] })
 type IProps = InferGetServerSidePropsType<typeof getServerSideProps>
 
 const Home: NextPage<IProps> = ({ posts }) => {
-	const [postsToRender, setPostsToRender] = useState(posts)
-	const [hasMorePosts, setHasMorePosts] = useState(posts.length >= limit)
-	const profile = useAuth()
-	const isAdmin = profile && profile.role === 'admin'
+  const [postsToRender, setPostsToRender] = useState(posts)
+  const [hasMorePosts, setHasMorePosts] = useState(posts.length >= limit)
+  const profile = useAuth()
+  const isAdmin = profile && profile.role === 'admin'
 
-	const fetchMorePosts = async () => {
-		try {
-			pageNumb++
-			const { data } = await axios(
-				//* if deleting 1 post will show total pages less by 1 every time
-				//  `/api/posts?limit=${limit}&pageNumb=${pageNumb}`
-				`/api/posts?limit=${limit}&skip=${postsToRender.length}`
-			)
-			if (data.posts.length < limit) {
-				setPostsToRender([...postsToRender, ...data.posts])
-				setHasMorePosts(false)
-			} else setPostsToRender([...postsToRender, ...data.posts])
-		} catch (error) {
-			setHasMorePosts(false)
-			console.log(error)
-		}
-	}
+  const fetchMorePosts = async () => {
+    try {
+      pageNumb++
+      const { data } = await axios(
+        //* if deleting 1 post will show total pages less by 1 every time
+        //  `/api/posts?limit=${limit}&pageNumb=${pageNumb}`
+        `/api/posts?limit=${limit}&skip=${postsToRender.length}`,
+      )
+      if (data.posts.length < limit) {
+        setPostsToRender([...postsToRender, ...data.posts])
+        setHasMorePosts(false)
+      } else setPostsToRender([...postsToRender, ...data.posts])
+    } catch (error) {
+      setHasMorePosts(false)
+      console.log(error)
+    }
+  }
 
-	return (
-		<DefaultLayout>
-			<div className='pb-20'>
-				<InfiniteScrollPosts
-					hasMore={hasMorePosts}
-					posts={postsToRender}
-					dataLength={postsToRender.length}
-					next={fetchMorePosts}
-					showControls={isAdmin}
-					onPostRemoved={post => {
-						setPostsToRender(filterPosts(postsToRender, post))
-					}}
-				/>
-			</div>
-		</DefaultLayout>
-	)
+  return (
+    <DefaultLayout>
+      <div className="pb-20">
+        <InfiniteScrollPosts
+          hasMore={hasMorePosts}
+          posts={postsToRender}
+          dataLength={postsToRender.length}
+          next={fetchMorePosts}
+          showControls={isAdmin}
+          onPostRemoved={(post) => {
+            setPostsToRender(filterPosts(postsToRender, post))
+          }}
+        />
+      </div>
+    </DefaultLayout>
+  )
 }
 
 export default Home
 interface ServerSideResponse {
-	posts: PostDetail[]
+  posts: PostDetail[]
 }
 
 const limit = 9
 let pageNumb = 0
 export const getServerSideProps: GetServerSideProps<
-	ServerSideResponse
+  ServerSideResponse
 > = async () => {
-	try {
-		// read posts
-		const posts = await readPostsFromDb(limit, pageNumb)
-		const formattedPosts = formatPosts(posts)
-		// format posts
-		return {
-			props: {
-				posts: formattedPosts,
-			},
-		}
-	} catch (error) {
-		return { notFound: true }
-	}
+  try {
+    // read posts
+    const posts = await readPostsFromDb(limit, pageNumb)
+    const formattedPosts = formatPosts(posts)
+    // format posts
+    return {
+      props: {
+        posts: formattedPosts,
+      },
+    }
+  } catch (error) {
+    return { notFound: true }
+  }
 }
