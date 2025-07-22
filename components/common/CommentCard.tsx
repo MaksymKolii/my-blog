@@ -10,25 +10,17 @@ import {
 import CommentForm from './CommentForm'
 import { CommentResponse } from '@/utils/types'
 
-// interface CommentOwnerProfile {
-// 	name: string
-// 	avatar?: string
-// }
 
 interface ICommentCard {
   comment: CommentResponse
-  // profile: CommentOwnerProfile
-  // date: string
-  // content: string
+ 
   onUpdateSubmit?(content: string): void
   onReplySubmit?(content: string): void
 }
 
 const CommentCard: FC<ICommentCard> = ({
   comment,
-  // profile,
-  // date,
-  // content,
+  
   onUpdateSubmit,
   onReplySubmit,
 }): JSX.Element => {
@@ -40,10 +32,7 @@ const CommentCard: FC<ICommentCard> = ({
 
   const [showForm, setShowForm] = useState(false)
   const [initialState, setInitialState] = useState('')
-  // if (!owner) {
-  // 	// Просто не показываем ничего — но после хуков
-  // 	return <></>
-  // }
+
 
   // const { name, avatar } = owner
   const displayReplyForm = () => {
@@ -75,22 +64,20 @@ const CommentCard: FC<ICommentCard> = ({
 
   return (
     <div className="flex space-x-3">
-      <ProfileIcon
-        nameInitial={comment.owner ? comment.owner.name[0].toUpperCase() : 'U'}
-        avatar={comment.owner?.avatar}
-      />
+     
 
-      {/* <ProfileIcon nameInitial={name[0].toUpperCase()} avatar={avatar} /> */}
+      <ProfileIcon nameInitial={name?.[0]?.toUpperCase() || 'U'} avatar={avatar} />
 
       <div className="flex-1">
         {/* <h1 className='text-lg text-primary-dark dark:text-primary font-semibold'>
 					{name}
 				</h1> */}
         <h1 className="text-lg text-primary-dark dark:text-primary font-semibold">
-          {!comment.owner ? (
+          {isDeleted ? (
             <span className="text-gray-500">Deleted user</span>
           ) : (
-            comment.owner.name
+            name
+            
           )}
         </h1>
 

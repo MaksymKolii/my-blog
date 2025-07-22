@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react'
+import { FC, Fragment, useEffect, useState } from 'react'
 import CommentForm from './CommentForm'
 import { GitHubAuthButton } from '../button'
 import useAuth from '@/hooks/useAuth'
@@ -27,49 +27,96 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
     const chiefCommentIndex = updatedComments.findIndex(
       ({ id }) => id === reply.repliedTo,
     )
+     const { replies } = updatedComments[chiefCommentIndex]
+    updatedComments[chiefCommentIndex].replies = replies
+      ? [...replies, reply]
+      : [reply]
 
-    const { replies } = updatedComments[chiefCommentIndex]
-    if (replies) {
-      updatedComments[chiefCommentIndex].replies = [...replies, reply]
-    } else {
-      updatedComments[chiefCommentIndex].replies = [reply]
-    }
+    // const { replies } = updatedComments[chiefCommentIndex]
+    // if (replies) {
+    //   updatedComments[chiefCommentIndex].replies = [...replies, reply]
+    // } else {
+    //   updatedComments[chiefCommentIndex].replies = [reply]
+    // }
     setComments([...updatedComments])
   }
 
-  const handleNewCommentSubmit = async (content: string) => {
+  // const handleNewCommentSubmit = async (content: string) => {
+  //   setSubmitting(true)
+  //   try {
+  //     const newComment = await axios
+  //       .post('/api/comment', { content, belongsTo })
+  //       .then(({ data }) => data.comment)
+  //       .catch((err) => console.log(err))
+  //     // console.log(newComment)
+  //     if (newComment && comments) setComments([...comments, newComment])
+  //     else setComments([newComment])
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+
+  //   setSubmitting(false)
+  // }
+  // const handleReplySubmit = (replyComment: {
+  //   content: string
+  //   repliedTo: string
+  // }) => {
+  //   axios
+  //     .post('/api/comment/add-reply', replyComment)
+  //     .then(({ data }) => insertNewReplyComments(data.comment))
+  //     .catch((err) => console.log(err))
+  // }
+
+  // useEffect(() => {
+  //   axios(`/api/comment?belongsTo=${belongsTo}`)
+  //     .then(({ data }) => {
+  //       setComments(data.comments)
+  //       // console.log(data.comments)
+  //     })
+  //     .catch((err) => console.log(err))
+  // }, [belongsTo])
+
+    const handleNewCommentSubmit = async (content: string) => {
     setSubmitting(true)
     try {
-      const newComment = await axios
-        .post('/api/comment', { content, belongsTo })
-        .then(({ data }) => data.comment)
-        .catch((err) => console.log(err))
-      // console.log(newComment)
-      if (newComment && comments) setComments([...comments, newComment])
-      else setComments([newComment])
-    } catch (error) {
-      console.log(error)
-    }
+      const { data } = await axios.post('/api/comment', { content, belongsTo })
+      const newComment = data.comment
 
-    setSubmitting(false)
+      if (newComment && comments) {
+        setComments([...comments, newComment])
+      } else {
+        setComments([newComment])
+      }
+    } catch (error) {
+      console.error('Error creating comment:', error)
+    } finally {
+      setSubmitting(false)
+    }
   }
-  const handleReplaySubmit = (replyComment: {
+
+  const handleReplySubmit = async (replyComment: {
     content: string
     repliedTo: string
   }) => {
-    axios
-      .post('/api/comment/add-reply', replyComment)
-      .then(({ data }) => insertNewReplyComments(data.comment))
-      .catch((err) => console.log(err))
+    try {
+      const { data } = await axios.post('/api/comment/add-reply', replyComment)
+      insertNewReplyComments(data.comment)
+    } catch (error) {
+      console.error('Error submitting reply:', error)
+    }
   }
 
   useEffect(() => {
-    axios(`/api/comment?belongsTo=${belongsTo}`)
-      .then(({ data }) => {
+    const fetchComments = async () => {
+      try {
+        const { data } = await axios(`/api/comment?belongsTo=${belongsTo}`)
         setComments(data.comments)
-        // console.log(data.comments)
-      })
-      .catch((err) => console.log(err))
+      } catch (err) {
+        console.error('Error loading comments:', err)
+      }
+    }
+
+    if (belongsTo) fetchComments()
   }, [belongsTo])
   return (
     <div className="py-20 space-y-4">
@@ -87,13 +134,13 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
       {comments?.map((comment) => {
         const { replies } = comment
         return (
-          // <div key={comment.id}>
-          <>
+        
+          <Fragment key={comment.id}>
             <CommentCard
-              key={comment.id}
+              // key={comment.id}
               comment={comment}
               onReplySubmit={(content) =>
-                handleReplaySubmit({ content, repliedTo: comment.id })
+                handleReplySubmit({ content, repliedTo: comment.id })
               }
               onUpdateSubmit={(cont) => {
                 console.log('Update: - ', cont)
@@ -108,7 +155,7 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
                       key={reply.id}
                       comment={reply}
                       onReplySubmit={(content) =>
-                        handleReplaySubmit({ content, repliedTo: comment.id })
+                        handleReplySubmit({ content, repliedTo: comment.id })
                       }
                       onUpdateSubmit={(cont) => {
                         console.log('Update: - ', cont)
@@ -118,7 +165,7 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
                 })}
               </div>
             ) : null}
-          </>
+          </Fragment>
         )
       })}
     </div>
