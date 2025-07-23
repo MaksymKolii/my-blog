@@ -5,6 +5,7 @@ import useAuth from '@/hooks/useAuth'
 import { CommentResponse } from '@/utils/types'
 import axios from 'axios'
 import CommentCard from './CommentCard'
+import ConfirmModal from './ConfirmModal'
 
 interface IComments {
   belongsTo?: string
@@ -14,6 +15,7 @@ interface IComments {
 const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
   const [comments, setComments] = useState<CommentResponse[]>()
   const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const [commentToDelete, setCommentToDelete] = useState<CommentResponse | null>(null)
   const [reachedToEnd, setReachedToEnd] = useState(false)
   const [busyCommentLike, setBusyCommentLike] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -27,7 +29,7 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
     const chiefCommentIndex = updatedComments.findIndex(
       ({ id }) => id === reply.repliedTo,
     )
-     const { replies } = updatedComments[chiefCommentIndex]
+    const { replies } = updatedComments[chiefCommentIndex]
     updatedComments[chiefCommentIndex].replies = replies
       ? [...replies, reply]
       : [reply]
@@ -38,6 +40,36 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
     // } else {
     //   updatedComments[chiefCommentIndex].replies = [reply]
     // }
+    setComments([...updatedComments])
+  }
+
+  const updateEditedComment = (newComment: CommentResponse) => {
+
+    if(!comments) return
+
+    let updatedComments = [...comments]
+    // To update the we can only change the content
+    // if edited comment is chief
+    if(newComment.chiefComment){
+
+      const index =updatedComments.findIndex(({id}) => id === newComment.id)
+      updatedComments[index].content = newComment.content
+    }
+    // otherwise updating comment from replies
+    else {
+
+     const chiefCommentIndex = updatedComments.findIndex(
+      ({ id }) => id === newComment.repliedTo,
+    )
+
+    let newReplies = updatedComments[chiefCommentIndex].replies
+    newReplies=newReplies?.map((comment)=>{
+      if(comment.id=== newComment.id) comment.content = newComment.content
+      return comment
+    })
+    updatedComments[chiefCommentIndex].replies = newReplies
+    }
+
     setComments([...updatedComments])
   }
 
@@ -76,7 +108,7 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
   //     .catch((err) => console.log(err))
   // }, [belongsTo])
 
-    const handleNewCommentSubmit = async (content: string) => {
+  const handleNewCommentSubmit = async (content: string) => {
     setSubmitting(true)
     try {
       const { data } = await axios.post('/api/comment', { content, belongsTo })
@@ -103,6 +135,19 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
       insertNewReplyComments(data.comment)
     } catch (error) {
       console.error('Error submitting reply:', error)
+    }
+  }
+
+
+  const handleUpdateSubmit = async (content: string, id: string) => {
+    try {
+      const { data } = await axios.patch(
+        `/api/comment?commentId=${id}`,
+        {content},
+      )
+      updateEditedComment(data.comment)
+    } catch (error) {
+      console.error('Error update comment:', error)
     }
   }
 
@@ -134,32 +179,33 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
       {comments?.map((comment) => {
         const { replies } = comment
         return (
-        
           <Fragment key={comment.id}>
             <CommentCard
-              // key={comment.id}
+              key={comment.id}
               comment={comment}
+              showControls={userProfile?.id === comment.owner?.id}
               onReplySubmit={(content) =>
                 handleReplySubmit({ content, repliedTo: comment.id })
               }
-              onUpdateSubmit={(cont) => {
-                console.log('Update: - ', cont)
-              }}
+              onUpdateSubmit={(content) =>
+                handleUpdateSubmit(content, comment.id)
+              }
             />
             {replies?.length ? (
               <div className=" w-[93%] ml-auto space-y-3">
                 <h1 className="text-secondary-dark mb-3">Replies </h1>
-                {replies?.map((reply) => {
+                {replies.map((reply) => {
                   return (
                     <CommentCard
                       key={reply.id}
+                      showControls={userProfile?.id === reply.owner?.id}
                       comment={reply}
                       onReplySubmit={(content) =>
                         handleReplySubmit({ content, repliedTo: comment.id })
                       }
-                      onUpdateSubmit={(cont) => {
-                        console.log('Update: - ', cont)
-                      }}
+                      onUpdateSubmit={(content) =>
+                        handleUpdateSubmit(content, reply.id)
+                      }
                     />
                   )
                 })}
@@ -168,6 +214,7 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
           </Fragment>
         )
       })}
+      <ConfirmModal visible={showConfirmModal} title='Do you really want to delete this comment?' subTitle="This will remove the comment and all its replies if it's a top-level comment!"/>
     </div>
   )
 }

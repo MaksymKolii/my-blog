@@ -36,6 +36,8 @@ const ProfileIcon: FC<IProfileIcon> = ({
       )}
     </div>
   )
+  
+  
 }
 
 export default ProfileIcon

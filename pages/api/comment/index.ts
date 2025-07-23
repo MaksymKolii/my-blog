@@ -186,12 +186,12 @@ const updateComment: NextApiHandler = async (req, res) => {
     // maksymKolii
     //owner: '67757df1073a7b9a95ac1686',
     owner: user.id,
-  })
+  }).populate('owner')
   if (!comment) return res.status(404).json({ error: 'Comment not found!' })
 
   comment.content = req.body.content
   await comment.save()
-  res.json(comment)
+  res.json({comment :formatComment(comment)})
 }
 
 export default handler

@@ -13,14 +13,14 @@ import { CommentResponse } from '@/utils/types'
 
 interface ICommentCard {
   comment: CommentResponse
- 
+ showControls?: boolean
   onUpdateSubmit?(content: string): void
   onReplySubmit?(content: string): void
 }
 
 const CommentCard: FC<ICommentCard> = ({
   comment,
-  
+  showControls = false,
   onUpdateSubmit,
   onReplySubmit,
 }): JSX.Element => {
@@ -60,6 +60,7 @@ const CommentCard: FC<ICommentCard> = ({
       // means we want to reply
       onReplySubmit && onReplySubmit(comment)
     }
+    hideReplyForm()
   }
 
   return (
@@ -95,14 +96,14 @@ const CommentCard: FC<ICommentCard> = ({
               <BsFillReplyAllFill />
               <span>Reply</span>
             </Button>
-            <Button onClick={handleOnEditClick}>
+           {showControls && <> <Button onClick={handleOnEditClick}>
               <BsPencilSquare />
               <span>Edit</span>
             </Button>
             <Button onClick={handleOnDeleteClick}>
               <BsFillTrashFill />
               <span>Delete</span>
-            </Button>
+            </Button></>}
           </div>
         )}
         {showForm && (
