@@ -16,6 +16,7 @@ interface ICommentCard {
  showControls?: boolean
   onUpdateSubmit?(content: string): void
   onReplySubmit?(content: string): void
+  onDeleteClick?(): void
 }
 
 const CommentCard: FC<ICommentCard> = ({
@@ -23,6 +24,7 @@ const CommentCard: FC<ICommentCard> = ({
   showControls = false,
   onUpdateSubmit,
   onReplySubmit,
+  onDeleteClick,
 }): JSX.Element => {
   const { owner, content, createdAt } = comment
 
@@ -100,7 +102,7 @@ const CommentCard: FC<ICommentCard> = ({
               <BsPencilSquare />
               <span>Edit</span>
             </Button>
-            <Button onClick={handleOnDeleteClick}>
+            <Button onClick={onDeleteClick} >
               <BsFillTrashFill />
               <span>Delete</span>
             </Button></>}

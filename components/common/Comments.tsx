@@ -15,7 +15,8 @@ interface IComments {
 const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
   const [comments, setComments] = useState<CommentResponse[]>()
   const [showConfirmModal, setShowConfirmModal] = useState(false)
-  const [commentToDelete, setCommentToDelete] = useState<CommentResponse | null>(null)
+  const [commentToDelete, setCommentToDelete] =
+    useState<CommentResponse | null>(null)
   const [reachedToEnd, setReachedToEnd] = useState(false)
   const [busyCommentLike, setBusyCommentLike] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -44,34 +45,72 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
   }
 
   const updateEditedComment = (newComment: CommentResponse) => {
-
-    if(!comments) return
+    if (!comments) return
 
     let updatedComments = [...comments]
     // To update the we can only change the content
     // if edited comment is chief
-    if(newComment.chiefComment){
-
-      const index =updatedComments.findIndex(({id}) => id === newComment.id)
+    if (newComment.chiefComment) {
+      const index = updatedComments.findIndex(({ id }) => id === newComment.id)
       updatedComments[index].content = newComment.content
     }
     // otherwise updating comment from replies
     else {
+      const chiefCommentIndex = updatedComments.findIndex(
+        ({ id }) => id === newComment.repliedTo,
+      )
 
-     const chiefCommentIndex = updatedComments.findIndex(
-      ({ id }) => id === newComment.repliedTo,
-    )
-
-    let newReplies = updatedComments[chiefCommentIndex].replies
-    newReplies=newReplies?.map((comment)=>{
-      if(comment.id=== newComment.id) comment.content = newComment.content
-      return comment
-    })
-    updatedComments[chiefCommentIndex].replies = newReplies
+      let newReplies = updatedComments[chiefCommentIndex].replies
+      newReplies = newReplies?.map((comment) => {
+        if (comment.id === newComment.id) comment.content = newComment.content
+        return comment
+      })
+      updatedComments[chiefCommentIndex].replies = newReplies
     }
 
     setComments([...updatedComments])
   }
+
+  const updateDeletedComments1 = (deletedComment: CommentResponse) => {
+    if (!comments) return
+
+   
+    let newComments = [...comments]
+
+    if (deletedComment.chiefComment)
+      newComments = newComments.filter(({ id }) => id !== deletedComment.id)
+    else {
+      const chiefCommentIndex = newComments.findIndex(
+        ({ id }) => id === deletedComment.repliedTo,
+      )
+      newComments[chiefCommentIndex].replies = newComments[chiefCommentIndex].replies?.filter(({id})=> id !== deletedComment.id)
+    }
+    setComments([...newComments])
+  }
+
+ const updateDeletedComments = (deletedComment: CommentResponse) => {
+  setComments(prev => {
+    if (!prev) return prev 
+
+    const updated = [...prev]
+
+    if (deletedComment.chiefComment) {
+      return updated.filter(({ id }) => id !== deletedComment.id)
+    }
+
+    const chiefIndex = updated.findIndex(({ id }) => id === deletedComment.repliedTo)
+    if (chiefIndex === -1) return updated
+
+    const replies = updated[chiefIndex].replies?.filter(({ id }) => id !== deletedComment.id)
+    updated[chiefIndex] = {
+      ...updated[chiefIndex],
+      replies,
+    }
+
+    return updated
+  })
+}
+
 
   // const handleNewCommentSubmit = async (content: string) => {
   //   setSubmitting(true)
@@ -138,17 +177,49 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
     }
   }
 
-
   const handleUpdateSubmit = async (content: string, id: string) => {
     try {
-      const { data } = await axios.patch(
-        `/api/comment?commentId=${id}`,
-        {content},
-      )
+      const { data } = await axios.patch(`/api/comment?commentId=${id}`, {
+        content,
+      })
       updateEditedComment(data.comment)
     } catch (error) {
       console.error('Error update comment:', error)
     }
+  }
+
+  const handleOnDeleteClick = async (comment: CommentResponse) => {
+    setCommentToDelete(comment)
+    setShowConfirmModal(true)
+  }
+  const handleOnDeleteCancel = async () => {
+    setCommentToDelete(null)
+    setShowConfirmModal(false)
+  }
+  const handleOnDeleteConfirm = async () => {
+    // if (!commentToDelete) return
+    // axios
+    //   .delete(`/api/comment?commentId=${commentToDelete.id}`)
+    //   .then(({ data }) => {
+    //     if (data.removed) updateDeletedComments(commentToDelete)
+    //   })
+    //   .catch((error) => console.error('Error update comment:', error))
+    //   .finally(() => {
+    //     setCommentToDelete(null)
+    //     setShowConfirmModal(false)
+    //   })
+    if (!commentToDelete) return
+    try {
+      const { data } = await axios.delete(
+        `/api/comment?commentId=${commentToDelete.id}`,
+      )
+      if (data.removed) updateDeletedComments(commentToDelete)
+    } catch (error) {
+      console.error('Error update comment:', error)
+    }
+    setCommentToDelete(null)
+    setShowConfirmModal(false)
+    // console.log('commentToDelete:', commentToDelete)
   }
 
   useEffect(() => {
@@ -190,6 +261,7 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
               onUpdateSubmit={(content) =>
                 handleUpdateSubmit(content, comment.id)
               }
+              onDeleteClick={() => handleOnDeleteClick(comment)}
             />
             {replies?.length ? (
               <div className=" w-[93%] ml-auto space-y-3">
@@ -206,6 +278,7 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
                       onUpdateSubmit={(content) =>
                         handleUpdateSubmit(content, reply.id)
                       }
+                      onDeleteClick={() => handleOnDeleteClick(reply)}
                     />
                   )
                 })}
@@ -214,7 +287,13 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
           </Fragment>
         )
       })}
-      <ConfirmModal visible={showConfirmModal} title='Do you really want to delete this comment?' subTitle="This will remove the comment and all its replies if it's a top-level comment!"/>
+      <ConfirmModal
+        visible={showConfirmModal}
+        title="Do you really want to delete this comment?"
+        subTitle="This will remove the comment and all its replies if it's a top-level comment!"
+        onCancel={handleOnDeleteCancel}
+        onConfirm={handleOnDeleteConfirm}
+      />
     </div>
   )
 }

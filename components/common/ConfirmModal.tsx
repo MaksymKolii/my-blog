@@ -24,7 +24,7 @@ const ConfirmModal: FC<IConfirmModal> = ({
 }): JSX.Element => {
   return (
     <ModalContainer visible={visible} onClose={onClose}>
-      <div className="bg-primary-dark dark:bg-primary rounded p-3 space-y-2">
+      <div className="bg-primary-dark dark:bg-primary rounded p-3 space-y-2 max-w-[380px]">
         {' '}
         {/* title */}
         <p className="dark:text-primary-dark text-primary font-semibold tet-lg">
