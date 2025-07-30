@@ -9,6 +9,7 @@ import {
 } from 'react-icons/bs'
 import CommentForm from './CommentForm'
 import { CommentResponse } from '@/utils/types'
+import LikeHeart from './LikeHeart'
 
 
 interface ICommentCard {
@@ -17,6 +18,7 @@ interface ICommentCard {
   onUpdateSubmit?(content: string): void
   onReplySubmit?(content: string): void
   onDeleteClick?(): void
+  onLikeClick?(): void
 }
 
 const CommentCard: FC<ICommentCard> = ({
@@ -25,8 +27,9 @@ const CommentCard: FC<ICommentCard> = ({
   onUpdateSubmit,
   onReplySubmit,
   onDeleteClick,
+  onLikeClick,
 }): JSX.Element => {
-  const { owner, content, createdAt } = comment
+  const { owner, content, createdAt, likedByOwner, likes } = comment
 
   const isDeleted = !owner
   const name = owner?.name ?? 'Deleted user'
@@ -94,6 +97,7 @@ const CommentCard: FC<ICommentCard> = ({
         </div>
         {!isDeleted && (
           <div className="flex space-x-4">
+            <LikeHeart liked={likedByOwner} label={likes + " likes"} onClick={onLikeClick}/>
             <Button onClick={handleOnReplyClick}>
               <BsFillReplyAllFill />
               <span>Reply</span>

@@ -6,7 +6,8 @@ export interface CommentModelSchema {
   owner: ObjectId
   content: string
   likes: ObjectId[]
-  replies?: ObjectId[]
+  // replies?: ObjectId[]
+   replies?: (ObjectId | CommentModelSchema)[]
   repliedTo?: ObjectId
   chiefComment?: boolean
   createdAt: string

@@ -110,6 +110,59 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
     return updated
   })
 }
+ const updateLikeComments1 = (likedComment: CommentResponse) => {
+  //console.log('likedComment:', likedComment);
+ if (!comments) return
+
+   
+    let newComments = [...comments]
+
+    if (likedComment.chiefComment)
+      newComments = newComments.map(comment => {
+    if(comment.id === likedComment.id) return likedComment
+    return comment
+  
+  })
+    else {
+      const chiefCommentIndex = newComments.findIndex(
+        ({ id }) => id === likedComment.repliedTo,
+      )
+      newComments[chiefCommentIndex].replies = newComments[chiefCommentIndex].replies?.map((reply)=>{
+
+        if(reply.id === likedComment.id) return likedComment
+        return reply
+      } )
+    }
+    setComments([...newComments])
+}
+
+const updateLikeComments = (likedComment: CommentResponse) => {
+  setComments(prev => {
+    if (!prev) return prev;
+
+    const updated = [...prev];
+
+    if (likedComment.chiefComment) {
+      return updated.map(comment =>
+        comment.id === likedComment.id ? likedComment : comment
+      );
+    }
+
+    const chiefIndex = updated.findIndex(({ id }) => id === likedComment.repliedTo);
+    if (chiefIndex === -1) return updated;
+
+    const replies = updated[chiefIndex].replies?.map(reply =>
+      reply.id === likedComment.id ? likedComment : reply
+    );
+
+    updated[chiefIndex] = {
+      ...updated[chiefIndex],
+      replies,
+    };
+
+    return updated;
+  });
+};
 
 
   // const handleNewCommentSubmit = async (content: string) => {
@@ -222,6 +275,10 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
     // console.log('commentToDelete:', commentToDelete)
   }
 
+const handleOnLikeClick =(comment: CommentResponse) =>{
+  axios.post('/api/comment/update-like', {commentId:comment.id}).then(({data})=> updateLikeComments(data.comment)).catch(err =>console.log(err))
+}
+
   useEffect(() => {
     const fetchComments = async () => {
       try {
@@ -262,6 +319,7 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
                 handleUpdateSubmit(content, comment.id)
               }
               onDeleteClick={() => handleOnDeleteClick(comment)}
+                onLikeClick={()=>handleOnLikeClick(comment)}
             />
             {replies?.length ? (
               <div className=" w-[93%] ml-auto space-y-3">
@@ -279,6 +337,7 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
                         handleUpdateSubmit(content, reply.id)
                       }
                       onDeleteClick={() => handleOnDeleteClick(reply)}
+                      onLikeClick={()=>handleOnLikeClick(reply)}
                     />
                   )
                 })}

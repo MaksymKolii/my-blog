@@ -1,6 +1,6 @@
 import dbConnect from '@/lib/dbConnect'
-import { isAuth } from '@/lib/utils'
-import Comment from '@/models/Comment'
+import { formatComment, isAuth } from '@/lib/utils'
+import Comment, { CommentModelSchema } from '@/models/Comment'
 
 import { isValidObjectId, Schema, Types } from 'mongoose'
 
@@ -28,6 +28,19 @@ const updateLike: NextApiHandler = async (req, res) => {
 
   await dbConnect()
   const comment = await Comment.findById(commentId)
+    .populate({
+      path: 'owner',
+      select: 'name avatar',
+    })
+    .populate({
+      path: 'replies',
+      populate: {
+        path: 'owner',
+        select: 'name avatar',
+      },
+    })
+    //.select('createdAt likes content repliedTo')
+
   if (!comment) return res.status(401).json({ error: 'Comment not found !' })
 
   const oldLikes = comment.likes || []
@@ -63,7 +76,23 @@ const updateLike: NextApiHandler = async (req, res) => {
   // else comment.likes = [...oldLikes, likedBy]
 
   await comment.save()
-  return res.status(201).json({ comment, likes: comment.likes.length })
+  return res.status(201).json({
+    comment: {
+      ...formatComment(comment, user),
+
+      replies: Array.isArray(comment.replies)
+        ? comment.replies
+            .filter(
+              (r): r is CommentModelSchema =>
+                typeof r === 'object' && 'content' in r,
+            )
+            .map((reply) => formatComment(reply, user))
+        : [],
+
+      // replies: (comment.replies as any[])?.map((repl)=>
+      //    {return formatComment(repl, user)}),
+    },
+  })
 }
 
 export default handler

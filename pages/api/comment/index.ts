@@ -47,6 +47,7 @@ const readComments: NextApiHandler = async (req, res) => {
         select: 'name avatar',
       },
     })
+    //.select('createdAt likes content repliedTo')
 
   if (!comments) return res.json({ comment: comments })
 
