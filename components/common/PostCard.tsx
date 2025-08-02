@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { FC } from 'react'
 import dateFormat, { masks } from 'dateformat'
 import Link from 'next/link'
+import { trimText } from '@/utils/helper'
 
 interface IPostCard {
   post: PostDetail
@@ -11,10 +12,6 @@ interface IPostCard {
   onDeleteClick?(): void
 }
 
-const trimText = (text: string, trimBy: number): string => {
-  if (text.length <= trimBy) return text
-  return text.substring(0, trimBy).trim() + '...'
-}
 
 const PostCard: FC<IPostCard> = ({
   post,

@@ -37,3 +37,17 @@ export interface CommentResponse {
   chiefComment: boolean
   owner: { name: string; id: string; avatar?: string } | null
 }
+export interface LatestComment {
+  id: string
+  owner: {
+    id: string
+    name: string
+    avatar?: string
+  }
+  content: string
+  belongsTo: {
+    id: string
+    title: string
+    slug: string
+  }
+}

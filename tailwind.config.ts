@@ -30,6 +30,16 @@ const config: Config = {
       transitionProperty: {
         width: 'width',
       },
+// added for animation 
+         animation: {
+        fadeIn: 'fadeIn 0.4s ease-in-out',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(8px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+      },
     },
   },
   plugins: [require('@tailwindcss/typography')],
