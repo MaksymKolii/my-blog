@@ -1,8 +1,7 @@
-
 import {  isAdmin } from '@/lib/utils'
 
 import Comment from '@/models/Comment'
-import { CommentPopulated } from '@/models/comment.types'
+// import { CommentPopulated } from '@/models/comment.types'
 
 import { LatestComment } from '@/utils/types'
 
@@ -41,9 +40,9 @@ const limit=4
       path: 'belongsTo',
       select: 'title slug',
     })
-    .lean<CommentPopulated[]>()
+    // .lean<CommentPopulated[]>()
 
-    const latestComments : LatestComment[] =comments.map((comm) => ({
+    const latestComments : LatestComment[] =comments.map((comm: any) => ({
         id: comm._id.toString(),
         content:comm.content,
         owner:{

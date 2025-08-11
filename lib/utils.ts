@@ -5,9 +5,10 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import dbConnect from './dbConnect'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../pages/api/auth/[...nextauth]'
-import { CommentModelSchema } from '@/models/Comment'
+ import { CommentModelSchema } from '@/models/Comment'
 import { ObjectId, Schema, Types } from 'mongoose'
 
+//import type { CommentRaw } from '@/models/Comment'
 interface FormidablePromise<T> {
   files: formidable.Files
   // body: formidable.Fields;
@@ -105,6 +106,7 @@ const getLikedByOwner = (likes: any[], user: UserProfile) =>
 // ): boolean => likes.some(id => id.toString() === user.id)
 
 export const formatComment = (
+  //comment: CommentRaw,
   comment: CommentModelSchema,
   user?: UserProfile,
 ): CommentResponse => {
@@ -148,3 +150,123 @@ export const formatComment = (
 
   // 	}
 }
+
+
+
+// import Post, { PostModelSchema } from '@/models/Post'
+// import { CommentResponse, PostDetail, UserProfile } from '../utils/types'
+// import formidable from 'formidable'
+// import { NextApiRequest, NextApiResponse } from 'next'
+// import dbConnect from './dbConnect'
+// import { getServerSession } from 'next-auth'
+// import { authOptions } from '../pages/api/auth/[...nextauth]'
+// import { Types } from 'mongoose'
+// import type { CommentRaw } from '@/models/Comment'
+
+// interface FormidablePromise<T> {
+//   files: formidable.Files
+//   body: T
+// }
+
+// export const readFile = <T extends object>(
+//   req: NextApiRequest,
+// ): Promise<FormidablePromise<T>> => {
+//   const form = formidable()
+//   return new Promise((resolve, reject) => {
+//     form.parse(req, (err, fields, files) => {
+//       if (err) reject(err)
+//       resolve({ files, body: fields as T })
+//     })
+//   })
+// }
+
+// export const readPostsFromDb = async (
+//   limit: number,
+//   pageNumb: number,
+//   skip?: number,
+// ) => {
+//   if (!limit || limit > 10)
+//     throw Error('Please USE limit under 10 !! and a valid pageNumb')
+
+//   const finalSkip = typeof skip === 'number' ? skip : limit * pageNumb
+
+//   await dbConnect()
+
+//   const posts = await Post.find()
+//     .sort({ createdAt: 'desc' })
+//     .select('-content')
+//     .skip(finalSkip)
+//     .limit(limit)
+
+//   return posts
+// }
+
+// export const formatPosts = (posts: PostModelSchema[]): PostDetail[] => {
+//   return posts.map((post) => ({
+//     id: post._id.toString(),
+//     title: post.title,
+//     slug: post.slug,
+//     createdAt: post.createdAt.toString(),
+//     thumbnail: post.thumbnail?.url || '',
+//     meta: post.meta,
+//     tags: post.tags,
+//   }))
+// }
+
+// export const isAdmin = async (req: NextApiRequest, res: NextApiResponse) => {
+//   const session = await getServerSession(req, res, authOptions)
+//   const user = session?.user as UserProfile
+//   return !!user && user.role === 'admin'
+// }
+
+// export const isAuth = async (req: NextApiRequest, res: NextApiResponse) => {
+//   const session = await getServerSession(req, res, authOptions)
+//   const user = session?.user
+//   if (user) return user as UserProfile
+// }
+
+// // ----- comments helpers & formatter -----
+
+// const getLikedByOwner = (likes: Types.ObjectId[], user: UserProfile) =>
+//   likes.some((id) => id.toString() === user.id)
+
+// // owner после populate
+// type OwnerPop = {
+//   _id: Types.ObjectId
+//   name: string
+//   avatar?: string
+// }
+
+// // «сырой» комментарий, где owner может быть ObjectId ИЛИ популятед-объект
+// type CommentWithMaybeOwner = Omit<CommentRaw, 'owner'> & {
+//   owner: Types.ObjectId | OwnerPop
+// }
+
+// const isOwnerPopulated = (val: Types.ObjectId | OwnerPop): val is OwnerPop =>
+//   typeof val === 'object' && val !== null && 'name' in val
+
+// export const formatComment = (
+//   comment: CommentWithMaybeOwner,
+//   user?: UserProfile,
+// ): CommentResponse => {
+//   const owner = isOwnerPopulated(comment.owner)
+//     ? {
+//         id: comment.owner._id.toString(),
+//         name: comment.owner.name ?? 'Unknown',
+//         avatar: comment.owner.avatar,
+//       }
+//     : null
+
+//   const likes = (comment.likes ?? []) as Types.ObjectId[]
+
+//   return {
+//     id: comment._id.toString(),
+//     content: comment.content,
+//     likes: likes.length,
+//     chiefComment: comment.chiefComment ?? false,
+//     createdAt: comment.createdAt?.toLocaleString(),
+//     owner,
+//     repliedTo: comment.repliedTo?.toString(),
+//     likedByOwner: user ? getLikedByOwner(likes, user) : false,
+//   }
+// }

@@ -96,3 +96,74 @@ const updateLike: NextApiHandler = async (req, res) => {
 }
 
 export default handler
+
+
+// import dbConnect from '@/lib/dbConnect'
+// import { formatComment, isAuth } from '@/lib/utils'
+// import Comment from '@/models/Comment'
+
+// import { isValidObjectId, Types } from 'mongoose'
+// import { NextApiHandler } from 'next'
+
+// const handler: NextApiHandler = (req, res) => {
+//   const { method } = req
+
+//   switch (method) {
+//     case 'POST':
+//       return updateLike(req, res)
+//     default:
+//       res.status(404).send('Not found')
+//   }
+// }
+
+// const updateLike: NextApiHandler = async (req, res) => {
+//   const user = await isAuth(req, res)
+//   if (!user) return res.status(403).json({ error: 'Unauthorized request !' })
+
+//   const { commentId } = req.body
+//   if (!isValidObjectId(commentId))
+//     return res.status(422).json({ error: 'Invalid comment id !' })
+
+//   await dbConnect()
+
+//   // Берём документ (НЕ lean), чтобы можно было сохранить лайк
+//   const comment = await Comment.findById(commentId)
+//     .populate({ path: 'owner', select: 'name avatar' })
+//     .populate({
+//       path: 'replies',
+//       populate: { path: 'owner', select: 'name avatar' },
+//     })
+
+//   if (!comment) return res.status(401).json({ error: 'Comment not found !' })
+
+//   const oldLikes = Array.isArray(comment.likes) ? comment.likes : []
+//   const likedBy = new Types.ObjectId(user.id)
+
+//   // toggle like
+//   const alreadyLiked = oldLikes.some((id) => id.toString() === likedBy.toString())
+//   if (alreadyLiked) {
+//     comment.likes = oldLikes.filter((id) => id.toString() !== likedBy.toString())
+//   } else {
+//     comment.likes = [...oldLikes, likedBy]
+//   }
+
+//   await comment.save()
+
+//   // Для форматирования превращаем документ в plain-object
+//   const plain = comment.toObject()
+
+//   return res.status(201).json({
+//     comment: {
+//       ...formatComment(plain, user),
+//       replies: Array.isArray(plain.replies)
+//         ? plain.replies
+//             .filter((r: unknown): r is Record<string, unknown> => {
+//               return typeof r === 'object' && r !== null && 'content' in r
+//             })
+//             .map((reply) => formatComment(reply as any, user))
+//         : [],
+//     },
+//   })
+// }
+
+// export default handler
