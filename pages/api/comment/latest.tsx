@@ -27,7 +27,7 @@ const readLatestComments: NextApiHandler = async (req, res) => {
   const admin = await isAdmin(req, res)
   if(!admin) return res.status(403).json({error:"Unauthorized User!"})
 
-const limit=6
+const limit=4
 
   const comments = await Comment.find({ chiefComment: true })
   .populate({
