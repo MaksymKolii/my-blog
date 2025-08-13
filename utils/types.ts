@@ -51,3 +51,12 @@ export interface LatestComment {
     slug: string
   }
 }
+export interface LatestUserProfile {
+
+id: string
+name: string
+avatar?: string
+provider:string
+email:string
+
+}
