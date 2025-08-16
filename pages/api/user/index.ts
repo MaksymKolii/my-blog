@@ -1,6 +1,7 @@
 import dbConnect from '@/lib/dbConnect'
 import { isAdmin } from '@/lib/utils'
 import User from '@/models/User'
+import { LatestUserProfile } from '@/utils/types'
 import { Types } from 'mongoose'
 
 import { NextApiHandler } from 'next'
@@ -10,8 +11,9 @@ type UserLean = {
   name: string
   email: string
   avatar?: string
-  role: 'user' | 'admin'
+//   role: 'user' | 'admin'
   createdAt?: Date 
+  provider: string
 }
 
 const handler: NextApiHandler = (req, res) => {
@@ -62,23 +64,30 @@ const getLatestUsers: NextApiHandler = async (req, res) => {
         .sort({ createdAt: -1 })   
         .skip(pageNo * limit)
         .limit(limit)
-        .select('_id name email avatar role createdAt')
+        .select('_id name email avatar role provider createdAt')
         .lean<UserLean[]>(),
       User.countDocuments({ role: 'user' }),
     ])
-  const items = users.map(u => ({
+  const items:LatestUserProfile[] = users.map(u => ({
       id: u._id.toString(),
       name: u.name,
       email: u.email,
       avatar: u.avatar,
-      role: u.role,
+      provider: u.provider,
+    //   role: u.role,
+      
       createdAt: u.createdAt?.toISOString?.() ?? '',
     }))
 
+   // const hasMore = (pageNo + 1) * limit < total
     const hasMore = (pageNo + 1) * limit < total
 
     return res.status(200).json({
       users: items,
+    //   pageNo,
+    //   limit,
+    //   total,
+    //   hasMore,
       pageNo,
       limit,
       total,

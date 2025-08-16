@@ -3,7 +3,7 @@ import { FC } from 'react'
 import ProfileIcon from '../common/ProfileIcon'
 
 interface LatestUserTableProps {
-  users: LatestUserProfile[]
+  users?: LatestUserProfile[]
 }
 
 const LatestUserTable: FC<LatestUserTableProps> = ({ users }): JSX.Element => {
@@ -15,8 +15,9 @@ const LatestUserTable: FC<LatestUserTableProps> = ({ users }): JSX.Element => {
             <th className=" p-2 ">Profile</th>
             <th className=" p-2 ">Email</th>
             <th className=" p-2 ">Provider</th>
+            {/* <th className=" p-2 ">Role</th> */}
           </tr>
-          {users.map((profile) => {
+          {users?.map((profile) => {
             return (
               <tr className='border-b' key={profile.id}>
                 <td className='py-2'>
@@ -33,6 +34,7 @@ const LatestUserTable: FC<LatestUserTableProps> = ({ users }): JSX.Element => {
                
                 <td>{profile.email} </td>
                 <td>{profile.provider} </td>
+                {/* <td>{profile.role} </td> */}
               </tr>
             )
           })}

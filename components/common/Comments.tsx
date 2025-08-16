@@ -12,7 +12,10 @@ interface IComments {
   fetchAll?: boolean
 }
 
-const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
+const limit = 7
+let currentPageNo = 0
+
+const Comments: FC<IComments> = ({ belongsTo, fetchAll }): JSX.Element => {
   const [comments, setComments] = useState<CommentResponse[]>()
   const [showConfirmModal, setShowConfirmModal] = useState(false)
   const [commentToDelete, setCommentToDelete] =
@@ -71,99 +74,102 @@ const Comments: FC<IComments> = ({ belongsTo }): JSX.Element => {
     setComments([...updatedComments])
   }
 
-  const updateDeletedComments1 = (deletedComment: CommentResponse) => {
-    if (!comments) return
+  // const updateDeletedComments1 = (deletedComment: CommentResponse) => {
+  //   if (!comments) return
 
-   
-    let newComments = [...comments]
+  //   let newComments = [...comments]
 
-    if (deletedComment.chiefComment)
-      newComments = newComments.filter(({ id }) => id !== deletedComment.id)
-    else {
-      const chiefCommentIndex = newComments.findIndex(
+  //   if (deletedComment.chiefComment)
+  //     newComments = newComments.filter(({ id }) => id !== deletedComment.id)
+  //   else {
+  //     const chiefCommentIndex = newComments.findIndex(
+  //       ({ id }) => id === deletedComment.repliedTo,
+  //     )
+  //     newComments[chiefCommentIndex].replies = newComments[chiefCommentIndex].replies?.filter(({id})=> id !== deletedComment.id)
+  //   }
+  //   setComments([...newComments])
+  // }
+
+  const updateDeletedComments = (deletedComment: CommentResponse) => {
+    setComments((prev) => {
+      if (!prev) return prev
+
+      const updated = [...prev]
+
+      if (deletedComment.chiefComment) {
+        return updated.filter(({ id }) => id !== deletedComment.id)
+      }
+
+      const chiefIndex = updated.findIndex(
         ({ id }) => id === deletedComment.repliedTo,
       )
-      newComments[chiefCommentIndex].replies = newComments[chiefCommentIndex].replies?.filter(({id})=> id !== deletedComment.id)
-    }
-    setComments([...newComments])
+      if (chiefIndex === -1) return updated
+
+      const replies = updated[chiefIndex].replies?.filter(
+        ({ id }) => id !== deletedComment.id,
+      )
+      updated[chiefIndex] = {
+        ...updated[chiefIndex],
+        replies,
+      }
+
+      return updated
+    })
   }
+  //  const updateLikeComments1 = (likedComment: CommentResponse) => {
+  //   //console.log('likedComment:', likedComment);
+  //  if (!comments) return
 
- const updateDeletedComments = (deletedComment: CommentResponse) => {
-  setComments(prev => {
-    if (!prev) return prev 
+  //     let newComments = [...comments]
 
-    const updated = [...prev]
+  //     if (likedComment.chiefComment)
+  //       newComments = newComments.map(comment => {
+  //     if(comment.id === likedComment.id) return likedComment
+  //     return comment
 
-    if (deletedComment.chiefComment) {
-      return updated.filter(({ id }) => id !== deletedComment.id)
-    }
+  //   })
+  //     else {
+  //       const chiefCommentIndex = newComments.findIndex(
+  //         ({ id }) => id === likedComment.repliedTo,
+  //       )
+  //       newComments[chiefCommentIndex].replies = newComments[chiefCommentIndex].replies?.map((reply)=>{
 
-    const chiefIndex = updated.findIndex(({ id }) => id === deletedComment.repliedTo)
-    if (chiefIndex === -1) return updated
+  //         if(reply.id === likedComment.id) return likedComment
+  //         return reply
+  //       } )
+  //     }
+  //     setComments([...newComments])
+  // }
 
-    const replies = updated[chiefIndex].replies?.filter(({ id }) => id !== deletedComment.id)
-    updated[chiefIndex] = {
-      ...updated[chiefIndex],
-      replies,
-    }
+  const updateLikeComments = (likedComment: CommentResponse) => {
+    setComments((prev) => {
+      if (!prev) return prev
 
-    return updated
-  })
-}
- const updateLikeComments1 = (likedComment: CommentResponse) => {
-  //console.log('likedComment:', likedComment);
- if (!comments) return
+      const updated = [...prev]
 
-   
-    let newComments = [...comments]
+      if (likedComment.chiefComment) {
+        return updated.map((comment) =>
+          comment.id === likedComment.id ? likedComment : comment,
+        )
+      }
 
-    if (likedComment.chiefComment)
-      newComments = newComments.map(comment => {
-    if(comment.id === likedComment.id) return likedComment
-    return comment
-  
-  })
-    else {
-      const chiefCommentIndex = newComments.findIndex(
+      const chiefIndex = updated.findIndex(
         ({ id }) => id === likedComment.repliedTo,
       )
-      newComments[chiefCommentIndex].replies = newComments[chiefCommentIndex].replies?.map((reply)=>{
+      if (chiefIndex === -1) return updated
 
-        if(reply.id === likedComment.id) return likedComment
-        return reply
-      } )
-    }
-    setComments([...newComments])
-}
+      const replies = updated[chiefIndex].replies?.map((reply) =>
+        reply.id === likedComment.id ? likedComment : reply,
+      )
 
-const updateLikeComments = (likedComment: CommentResponse) => {
-  setComments(prev => {
-    if (!prev) return prev;
+      updated[chiefIndex] = {
+        ...updated[chiefIndex],
+        replies,
+      }
 
-    const updated = [...prev];
-
-    if (likedComment.chiefComment) {
-      return updated.map(comment =>
-        comment.id === likedComment.id ? likedComment : comment
-      );
-    }
-
-    const chiefIndex = updated.findIndex(({ id }) => id === likedComment.repliedTo);
-    if (chiefIndex === -1) return updated;
-
-    const replies = updated[chiefIndex].replies?.map(reply =>
-      reply.id === likedComment.id ? likedComment : reply
-    );
-
-    updated[chiefIndex] = {
-      ...updated[chiefIndex],
-      replies,
-    };
-
-    return updated;
-  });
-};
-
+      return updated
+    })
+  }
 
   // const handleNewCommentSubmit = async (content: string) => {
   //   setSubmitting(true)
@@ -275,11 +281,29 @@ const updateLikeComments = (likedComment: CommentResponse) => {
     // console.log('commentToDelete:', commentToDelete)
   }
 
-const handleOnLikeClick =(comment: CommentResponse) =>{
-  axios.post('/api/comment/update-like', {commentId:comment.id}).then(({data})=> updateLikeComments(data.comment)).catch(err =>console.log(err))
-}
+  const handleOnLikeClick = (comment: CommentResponse) => {
+    axios
+      .post('/api/comment/update-like', { commentId: comment.id })
+      .then(({ data }) => updateLikeComments(data.comment))
+      .catch((err) => console.log(err))
+  }
+
+  //* fetching All comments
+  const fetchAllComments = async (pageNo = currentPageNo) => {
+    try {
+      const { data } = await axios(
+        `/api/comment/all?pageNo=${pageNo}&limit=${limit}`,
+      )
+
+      // const { comments } = data
+      setComments(data.comments)
+    } catch (error) {
+    console.log('error:', error);
+    }
+  }
 
   useEffect(() => {
+    if(!belongsTo) return
     const fetchComments = async () => {
       try {
         const { data } = await axios(`/api/comment?belongsTo=${belongsTo}`)
@@ -291,6 +315,31 @@ const handleOnLikeClick =(comment: CommentResponse) =>{
 
     if (belongsTo) fetchComments()
   }, [belongsTo])
+
+  //? try this
+  //  useEffect(() => {
+  //    if(!belongsTo && fetchAll) return
+  //   const fetchComments = async () => {
+  //     try {
+  //       const { data } = await axios(`/api/comment?belongsTo=${belongsTo}`)
+  //       setComments(data.comments)
+  //     } catch (err) {
+  //       console.error('Error loading comments:', err)
+  //     }
+  //   }
+
+  //   if (belongsTo) fetchComments()
+  // }, [belongsTo, fetchAll])
+  // ! -----------------------------
+  useEffect(() => {
+    if (!belongsTo && fetchAll) {
+       fetchAllComments()
+    }
+
+   
+
+  }, [belongsTo, fetchAll])
+
   return (
     <div className="py-20 space-y-4">
       {userProfile ? (
@@ -319,7 +368,7 @@ const handleOnLikeClick =(comment: CommentResponse) =>{
                 handleUpdateSubmit(content, comment.id)
               }
               onDeleteClick={() => handleOnDeleteClick(comment)}
-                onLikeClick={()=>handleOnLikeClick(comment)}
+              onLikeClick={() => handleOnLikeClick(comment)}
             />
             {replies?.length ? (
               <div className=" w-[93%] ml-auto space-y-3">
@@ -337,7 +386,7 @@ const handleOnLikeClick =(comment: CommentResponse) =>{
                         handleUpdateSubmit(content, reply.id)
                       }
                       onDeleteClick={() => handleOnDeleteClick(reply)}
-                      onLikeClick={()=>handleOnLikeClick(reply)}
+                      onLikeClick={() => handleOnLikeClick(reply)}
                     />
                   )
                 })}

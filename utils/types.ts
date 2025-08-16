@@ -58,5 +58,7 @@ name: string
 avatar?: string
 provider:string
 email:string
+role?: string
+
 
 }
