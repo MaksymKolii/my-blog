@@ -84,10 +84,7 @@ const getLatestUsers: NextApiHandler = async (req, res) => {
 
     return res.status(200).json({
       users: items,
-    //   pageNo,
-    //   limit,
-    //   total,
-    //   hasMore,
+  
       pageNo,
       limit,
       total,

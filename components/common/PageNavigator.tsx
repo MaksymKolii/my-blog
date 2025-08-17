@@ -52,7 +52,7 @@ const PageNavigator: FC<PageNavigatorProps> = ({
   isNextDisabled = false,
 }): JSX.Element | null => {
   // если обе кнопки скрыты — вообще ничего не рендерим
-  if (!showPrev && !showNext) return null
+  // if (!showPrev && !showNext) return null
 
   return (
     <div className="flex items-center space-x-3">

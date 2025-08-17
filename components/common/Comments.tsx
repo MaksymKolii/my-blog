@@ -724,7 +724,7 @@ const Comments: FC<IComments> = ({ belongsTo, fetchAll }): JSX.Element => {
 
       {fetchAll && (
         <div className="mt-auto py-10 flex justify-end">
-         {/* <div className="fixed bottom-6 right-6 z-20"> */}
+    
           <PageNavigator
             onNextClick={handleOnNextClick}
             onPrevClick={handleOnPrevClick}
