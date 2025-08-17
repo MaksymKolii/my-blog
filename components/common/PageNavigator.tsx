@@ -32,6 +32,8 @@
 // export default PageNavigator
 
 
+//!  working before chsnge user/admin
+
 import { FC, MouseEventHandler } from 'react'
 
 interface PageNavigatorProps {
@@ -89,3 +91,5 @@ const Button: FC<{
 }
 
 export default PageNavigator
+
+

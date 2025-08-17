@@ -664,7 +664,7 @@ const Comments: FC<IComments> = ({ belongsTo, fetchAll }): JSX.Element => {
 
   // -------- render --------
   return (
-    <div className="py-20 space-y-4">
+    <div className="pt-10 pb-20 space-y-4">
       {userProfile ? (
         <CommentForm
           visible={!fetchAll}

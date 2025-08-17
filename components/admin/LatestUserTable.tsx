@@ -8,7 +8,7 @@ interface LatestUserTableProps {
 
 const LatestUserTable: FC<LatestUserTableProps> = ({ users }): JSX.Element => {
   return (
-    <div>
+    <div className='pt-4'>
       <table className="w-full text-left text-primary-dark dark:text-primary ">
         <tbody>
           <tr className=" text-left bg-secondary-dark text-primary ">
