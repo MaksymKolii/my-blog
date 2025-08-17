@@ -6,13 +6,14 @@ import { CommentResponse } from '@/utils/types'
 import axios from 'axios'
 import CommentCard from './CommentCard'
 import ConfirmModal from './ConfirmModal'
+import PageNavigator from './PageNavigator'
 
 interface IComments {
   belongsTo?: string
   fetchAll?: boolean
 }
 
-const limit = 7
+const limit = 5
 let currentPageNo = 0
 
 const Comments: FC<IComments> = ({ belongsTo, fetchAll }): JSX.Element => {
@@ -295,15 +296,30 @@ const Comments: FC<IComments> = ({ belongsTo, fetchAll }): JSX.Element => {
         `/api/comment/all?pageNo=${pageNo}&limit=${limit}`,
       )
 
-      // const { comments } = data
+      if(!data.comments.length) {
+         currentPageNo -=1
+        return setReachedToEnd(true)
+      }
       setComments(data.comments)
     } catch (error) {
-    console.log('error:', error);
+      console.log('error:', error)
     }
   }
 
+  const handleOnNextClick = () => {
+    if (reachedToEnd) return
+    currentPageNo++
+    fetchAllComments(currentPageNo)
+  }
+  const handleOnPrevClick = () => {
+    if (currentPageNo <= 0) return
+    if (reachedToEnd) setReachedToEnd(false)
+    currentPageNo -=1
+    fetchAllComments(currentPageNo)
+  }
+
   useEffect(() => {
-    if(!belongsTo) return
+    if (!belongsTo) return
     const fetchComments = async () => {
       try {
         const { data } = await axios(`/api/comment?belongsTo=${belongsTo}`)
@@ -316,34 +332,21 @@ const Comments: FC<IComments> = ({ belongsTo, fetchAll }): JSX.Element => {
     if (belongsTo) fetchComments()
   }, [belongsTo])
 
-  //? try this
-  //  useEffect(() => {
-  //    if(!belongsTo && fetchAll) return
-  //   const fetchComments = async () => {
-  //     try {
-  //       const { data } = await axios(`/api/comment?belongsTo=${belongsTo}`)
-  //       setComments(data.comments)
-  //     } catch (err) {
-  //       console.error('Error loading comments:', err)
-  //     }
-  //   }
-
-  //   if (belongsTo) fetchComments()
-  // }, [belongsTo, fetchAll])
-  // ! -----------------------------
+  // ? for All Comments
   useEffect(() => {
     if (!belongsTo && fetchAll) {
-       fetchAllComments()
+      fetchAllComments()
     }
-
-   
-
   }, [belongsTo, fetchAll])
 
   return (
     <div className="py-20 space-y-4">
       {userProfile ? (
-        <CommentForm onSubmit={handleNewCommentSubmit} title="Add comment" />
+        <CommentForm
+          visible={!fetchAll}
+          onSubmit={handleNewCommentSubmit}
+          title="Add comment"
+        />
       ) : (
         <div className="flex flex-col items-end space-y-2">
           <h3 className="text-secondary-dark font-semibold text-xl dark:text-secondary-light">
@@ -395,6 +398,12 @@ const Comments: FC<IComments> = ({ belongsTo, fetchAll }): JSX.Element => {
           </Fragment>
         )
       })}
+      <div className="py-10 flex justify-end">
+        <PageNavigator
+          onNextClick={handleOnNextClick}
+          onPrevClick={handleOnPrevClick}
+        />
+      </div>
       <ConfirmModal
         visible={showConfirmModal}
         title="Do you really want to delete this comment?"
