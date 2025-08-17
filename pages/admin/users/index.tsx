@@ -15,89 +15,91 @@ const Users: NextPage = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // useEffect(() => {
-  //   const controller = new AbortController()
 
-  //   ;(async () => {
-  //     try {
-  //       setLoading(true)
-  //       setError(null)
 
-  //       const { data } = await axios.get('/api/user', {
-  //         params: { pageNo: page, limit: LIMIT },
-  //         signal: controller.signal,
-  //       })
+  useEffect(() => {
+    const controller = new AbortController()
 
-  //       // ожидаем ответ вида { users, pageNo, limit, total, hasMore }
-  //       setUsers(Array.isArray(data.users) ? data.users : [])
-  //       setHasMore(Boolean(data.hasMore))
-  //     } catch (e: any) {
-  //       if (e instanceof CanceledError) return
-  //       if (e?.response?.status === 403) {
-  //         setError('Нет прав: доступ только для администратора.')
-  //       } else {
-  //         setError('Не удалось загрузить пользователей.')
-  //       }
-  //       console.error('GET /api/user failed:', e)
-  //     } finally {
-  //       setLoading(false)
-  //     }
-  //   })()
+    ;(async () => {
+      try {
+        setLoading(true)
+        setError(null)
 
-  //   return () => controller.abort()
-  // }, [page])
+        const { data } = await axios.get('/api/user', {
+          params: { pageNo: page, limit: LIMIT },
+          signal: controller.signal,
+        })
 
-  const reqIdRef = useRef(0)
-
-useEffect(() => {
-  const controller = new AbortController()
-  const reqId = ++reqIdRef.current
-  const requestedPage = page
-
-  ;(async () => {
-    try {
-      setLoading(true)
-      setError(null)
-
-      const { data } = await axios.get('/api/user', {
-        params: { pageNo: requestedPage, limit: LIMIT /*, role: 'all'*/ },
-        signal: controller.signal,
-        headers: { 'Cache-Control': 'no-store' }, // без 304 в dev
-      })
-
-      // устаревший ответ — игнорируем полностью
-      if (reqIdRef.current !== reqId) return
-
-      setUsers(Array.isArray(data.users) ? data.users : [])
-      setHasMore(Boolean(data.hasMore))
-
-      // сервер «зажал» страницу — синхронизируем
-      if (typeof data.pageNo === 'number' && data.pageNo !== requestedPage) {
-        setPage(data.pageNo)
+        // ожидаем ответ вида { users, pageNo, limit, total, hasMore }
+        setUsers(Array.isArray(data.users) ? data.users : [])
+        setHasMore(Boolean(data.hasMore))
+      } catch (e: any) {
+        if (e instanceof CanceledError) return
+        if (e?.response?.status === 403) {
+          setError('Нет прав: доступ только для администратора.')
+        } else {
+          setError('Не удалось загрузить пользователей.')
+        }
+        console.error('GET /api/user failed:', e)
+      } finally {
+        setLoading(false)
       }
+    })()
 
-      console.log('resp:', {
-        reqPage: requestedPage,
-        gotPage: data.pageNo,
-        total: data.total,
-        hasMore: data.hasMore,
-        len: data.users?.length,
-        reqId,
-        latestId: reqIdRef.current,
-      })
-    } catch (e: any) {
-      if (e instanceof CanceledError) return
-      if (reqIdRef.current !== reqId) return
-      setError(e?.response?.status === 403
-        ? 'Нет прав: доступ только для администратора.'
-        : 'Не удалось загрузить пользователей.')
-    } finally {
-      if (reqIdRef.current === reqId) setLoading(false)
-    }
-  })()
+    return () => controller.abort()
+  }, [page])
 
-  return () => controller.abort()
-}, [page])
+//   const reqIdRef = useRef(0)
+
+// useEffect(() => {
+//   const controller = new AbortController()
+//   const reqId = ++reqIdRef.current
+//   const requestedPage = page
+
+//   ;(async () => {
+//     try {
+//       setLoading(true)
+//       setError(null)
+
+//       const { data } = await axios.get('/api/user', {
+//         params: { pageNo: requestedPage, limit: LIMIT /*, role: 'all'*/ },
+//         signal: controller.signal,
+//         headers: { 'Cache-Control': 'no-store' }, // без 304 в dev
+//       })
+
+//       // устаревший ответ — игнорируем полностью
+//       if (reqIdRef.current !== reqId) return
+
+//       setUsers(Array.isArray(data.users) ? data.users : [])
+//       setHasMore(Boolean(data.hasMore))
+
+//       // сервер «зажал» страницу — синхронизируем
+//       if (typeof data.pageNo === 'number' && data.pageNo !== requestedPage) {
+//         setPage(data.pageNo)
+//       }
+
+//       console.log('resp:', {
+//         reqPage: requestedPage,
+//         gotPage: data.pageNo,
+//         total: data.total,
+//         hasMore: data.hasMore,
+//         len: data.users?.length,
+//         reqId,
+//         latestId: reqIdRef.current,
+//       })
+//     } catch (e: any) {
+//       if (e instanceof CanceledError) return
+//       if (reqIdRef.current !== reqId) return
+//       setError(e?.response?.status === 403
+//         ? 'Нет прав: доступ только для администратора.'
+//         : 'Не удалось загрузить пользователей.')
+//     } finally {
+//       if (reqIdRef.current === reqId) setLoading(false)
+//     }
+//   })()
+
+//   return () => controller.abort()
+// }, [page])
 
 
   const handleOnNextClick = () => {
