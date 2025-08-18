@@ -11,11 +11,28 @@ import parse from 'html-react-parser'
 import Image from 'next/image'
 import dateFormat from 'dateformat'
 import Comments from '@/components/common/Comments'
+import LikeHeart from '@/components/common/LikeHeart'
+import { useCallback, useState } from 'react'
+import { boolean } from 'joi'
 
 type ISinglePost = InferGetStaticPropsType<typeof getStaticProps>
 
 const SinglePost: NextPage<ISinglePost> = ({ post }) => {
+
+  const[likes, setLikes]=useState({likedByOwner:false, count:0})
   const { id, title, content, meta, tags, slug, thumbnail, createdAt } = post
+
+const getLikedLabel= useCallback((): string=>{
+
+const {likedByOwner,count}=likes
+
+if(likedByOwner&& count===1) return 'You liked this Post !'
+if(likedByOwner) return `You and ${count-1}other people liked this Post !`
+if(count===0) return 'Like this Post !'
+return count +' people liked this Post !'
+
+},[likes])
+
   return (
     <DefaultLayout title={title} desc={meta}>
       <div>
@@ -39,8 +56,11 @@ const SinglePost: NextPage<ISinglePost> = ({ post }) => {
         <div className=" prose prose-lg dark:prose-invert max-w-full mx-auto  ">
           {parse(content)}
         </div>
+        <div className="py-10">
+          <LikeHeart label={getLikedLabel()} />
+        </div>
         {/*  comment form */}
-        <Comments belongsTo={id} />
+        <Comments  belongsTo={id} />
       </div>
     </DefaultLayout>
   )
