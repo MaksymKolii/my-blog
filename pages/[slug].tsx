@@ -12,26 +12,102 @@ import Image from 'next/image'
 import dateFormat from 'dateformat'
 import Comments from '@/components/common/Comments'
 import LikeHeart from '@/components/common/LikeHeart'
-import { useCallback, useState } from 'react'
-import { boolean } from 'joi'
+import { useCallback, useEffect, useState } from 'react'
+import useAuth from '@/hooks/useAuth'
+import { signIn } from 'next-auth/react'
+import axios from 'axios'
 
 type ISinglePost = InferGetStaticPropsType<typeof getStaticProps>
 
 const SinglePost: NextPage<ISinglePost> = ({ post }) => {
-
-  const[likes, setLikes]=useState({likedByOwner:false, count:0})
   const { id, title, content, meta, tags, slug, thumbnail, createdAt } = post
 
-const getLikedLabel= useCallback((): string=>{
+type LikesState = { likedByOwner: boolean; count: number }
+const [likes, setLikes] = useState<LikesState>({ likedByOwner: false, count: 0 });
 
-const {likedByOwner,count}=likes
+  const [busy, setBusy] = useState(false)
 
-if(likedByOwner&& count===1) return 'You liked this Post !'
-if(likedByOwner) return `You and ${count-1}other people liked this Post !`
-if(count===0) return 'Like this Post !'
-return count +' people liked this Post !'
+  const user = useAuth()
 
-},[likes])
+useEffect(() => {
+  const controller = new AbortController()
+
+  axios.get('/api/posts/like-status', {
+    params: { postId: id },
+    signal: controller.signal,
+  })
+  .then(({ data }) => {
+    const n = Number(data?.newLikes ?? 0)   // ← НУЖНО newLikes
+    setLikes({
+      likedByOwner: !!data?.likedByOwner,
+      count: Number.isFinite(n) ? n : 0,    // страховка от NaN
+    })
+  })
+  .catch(err => {
+    if (axios.isCancel?.(err)) return
+    console.log(err)
+  })
+
+  return () => controller.abort()
+}, [id])
+
+
+//  useEffect(() => {
+//      axios.get('/api/posts/like-status', {
+//         params: { postId: id },
+  
+//       })
+//       .then(({data})=>setLikes({likedByOwner: data.likedByOwner, count: data.likesCount}))
+//       .catch(err=> console.log(err))
+// }, [id]);
+
+//   const getLikedLabel = useCallback(() => {
+//   const { likedByOwner, count } = likes;
+//   if (count === 0) return 'Like this Post!';
+//   if (likedByOwner && count === 1) return 'You liked this post!';
+//   if (likedByOwner) {
+//     const others = count - 1;
+//     return `You and ${others} other ${others === 1 ? 'person' : 'people'} liked this post!`;
+//   }
+//   return `${count} ${count === 1 ? 'person' : 'people'} liked this post!`;
+// }, [likes]);
+const getLikedLabel = useCallback(() => {
+  const liked = !!likes.likedByOwner;
+  const cRaw = likes.count;
+  const c = Number.isFinite(cRaw) ? cRaw : 0;
+
+  if (!liked) {
+    if (c === 0) return 'Like this post!';
+    return `${c} ${c === 1 ? 'person' : 'people'} liked this post!`;
+  }
+
+  // liked === true
+  if (c <= 1) return 'You liked this post!';   // covers 0 and 1 safely
+  const others = c - 1;
+  return `You and ${others} other ${others === 1 ? 'person' : 'people'} liked this post!`;
+}, [likes]);
+
+
+
+  // 3) обработчик клика
+  const handleOnLikeClick = async () => {
+    try {
+      if (!user) return await signIn('github')
+      setBusy(true)
+      const { data } = await axios.post(`/api/posts/update-like`, null, {
+        params: { postId: id },
+      })
+      // берём ИСТИНУ с бэка
+      setLikes({
+      likedByOwner: !!data.likedByOwner,
+        count: Number(data.newLikes ?? 0),
+      })
+    } catch (error) {
+      console.error('update-like failed:', error)
+    } finally {
+      setBusy(false)
+    }
+  }
 
   return (
     <DefaultLayout title={title} desc={meta}>
@@ -57,10 +133,15 @@ return count +' people liked this Post !'
           {parse(content)}
         </div>
         <div className="py-10">
-          <LikeHeart label={getLikedLabel()} />
+          <LikeHeart
+            liked={likes.likedByOwner}
+            label={getLikedLabel()}
+            onClick={handleOnLikeClick}
+            busy={busy}
+          />
         </div>
         {/*  comment form */}
-        <Comments  belongsTo={id} />
+        <Comments belongsTo={id} />
       </div>
     </DefaultLayout>
   )
