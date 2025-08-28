@@ -44,9 +44,9 @@
 
 
 
-// // //* ===================================================
-// //  //? Вариант B (эффективный при очень больших массивах лайков)
-// pages/api/posts/like-status.ts
+
+ //? Вариант B (эффективный при очень больших массивах лайков)
+
 import type { NextApiHandler } from 'next'
 import dbConnect from '@/lib/dbConnect'
 import { isAuth } from '@/lib/utils'

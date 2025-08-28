@@ -5,7 +5,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import dbConnect from './dbConnect'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../pages/api/auth/[...nextauth]'
- import { CommentModelSchema } from '@/models/Comment'
+import { CommentModelSchema } from '@/models/Comment'
 import { ObjectId, Schema, Types } from 'mongoose'
 
 //import type { CommentRaw } from '@/models/Comment'
@@ -46,6 +46,16 @@ export const readPostsFromDb = async (
     .limit(limit)
   return posts
 }
+
+// const VOWELS = /[aeiouyąęóаеёиоуыэюяєії]/gi // EN + PL (ą,ę,ó,y) + RU/UA
+
+// export const getInitialsNextConsonant = (name: string) => {
+//   if (!name) return ''
+//   const first = name.charAt(0).toUpperCase()
+//   const nextConsonant = name.slice(1).replace(VOWELS, '').charAt(0)
+//   const fallback = name.charAt(1) || ''
+//   return first + (nextConsonant || fallback).toLowerCase()
+// }
 
 export const formatPosts = (posts: PostModelSchema[]): PostDetail[] => {
   return posts.map((post) => ({
@@ -134,6 +144,7 @@ export const formatComment = (
     repliedTo: comment?.repliedTo?.toString(),
     likedByOwner: user ? getLikedByOwner(comment.likes ?? [], user) : false,
   }
+
   // const owner =
   // 	comment.owner as any
   // 	return {
@@ -150,8 +161,6 @@ export const formatComment = (
 
   // 	}
 }
-
-
 
 // import Post, { PostModelSchema } from '@/models/Post'
 // import { CommentResponse, PostDetail, UserProfile } from '../utils/types'
