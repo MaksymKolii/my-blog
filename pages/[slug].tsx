@@ -19,7 +19,7 @@ import axios from 'axios'
 import User from '@/models/User'
 import AuthorInfo from '@/components/common/AuthorInfo'
 import Share from '@/components/common/Share'
-
+import Link from 'next/link'
 
 type ISinglePost = InferGetStaticPropsType<typeof getStaticProps>
 
@@ -31,19 +31,29 @@ type ViewAuthorProfile = {
   github?: string
 }
 
-const host ='http://localhost:3000'
+// const host ='http://localhost:3000'
+const host = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
 
 const SinglePost: NextPage<ISinglePost> = ({ post }) => {
-  const { id, title, content, meta, slug, tags, author, thumbnail, createdAt } =
-    post
-
+  const {
+    id,
+    title,
+    content,
+    meta,
+    slug,
+    tags,
+    author,
+    thumbnail,
+    createdAt,
+    relatedPosts,
+  } = post
+  console.log('relatedPosts:', relatedPosts)
   type LikesState = { likedByOwner: boolean; count: number }
   const [likes, setLikes] = useState<LikesState>({
     likedByOwner: false,
     count: 0,
   })
 
-  // const [busy, setBusy] = useState(false)
   const [liking, setLiking] = useState(false)
 
   const user = useAuth()
@@ -148,9 +158,9 @@ const SinglePost: NextPage<ISinglePost> = ({ post }) => {
           <span>{dateFormat(createdAt, 'd-mmm-yyyy')}</span>
         </div>
         <div className="py-7 transition dark:bg-primary-dark bg-primary sticky top-0 z-50">
-        <Share url={host +'/'+ slug} />  
+          <Share url={host + '/' + slug} />
         </div>
-        
+
         <div className=" prose prose-lg dark:prose-invert max-w-full mx-auto  ">
           {parse(content)}
         </div>
@@ -166,7 +176,14 @@ const SinglePost: NextPage<ISinglePost> = ({ post }) => {
         <div className="pt-10">
           <AuthorInfo profile={authorProfile} />
         </div>
+        <div className="pt-5">
+          <h3 className="text-xl rounded-sm font-semibold bg-secondary-dark p-2 text-primary mb-4">Related Posts: 
 
+          </h3>
+          <div className="flex flex-col space-y-4">{relatedPosts.map(p=>{
+            return<Link className='font-semibold text-primary-dark dark:text-primary hover:underline' key={p.id} href={p.slug}>{p.title}</Link>
+          })}</div>
+        </div>
         {/*  comment form */}
         <Comments belongsTo={id} />
       </div>
@@ -200,6 +217,11 @@ interface StaticPropsResponse {
     thumbnail: string
     createdAt: string
     author: string
+    relatedPosts: {
+      id: string
+      title: string
+      slug: string
+    }[]
   }
 }
 
@@ -211,6 +233,22 @@ export const getStaticProps: GetStaticProps<
     await dbConnect()
     const post = await Post.findOne({ slug: params?.slug }).populate('author')
     if (!post) return { notFound: true }
+    // Fetching related posts according to tags
+    const posts = await Post.find({
+      // tags:{$in: [...post.tags]},
+      tags: { $in: post.tags ?? [] },
+      _id: { $ne: post._id },
+    })
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select('slug title')
+      .lean()
+
+    const relatedPosts = posts.map((p) => ({
+      id: p._id.toString(),
+      slug: p.slug,
+      title: p.title,
+    }))
     const {
       _id,
       title,
@@ -246,6 +284,7 @@ export const getStaticProps: GetStaticProps<
           thumbnail: thumbnail?.url || '',
           createdAt: createdAt.toString(),
           author: JSON.stringify(postAuthor),
+          relatedPosts,
         },
       },
       revalidate: 60,

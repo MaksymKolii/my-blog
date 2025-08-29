@@ -2,7 +2,8 @@ import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
 import Underline from '@tiptap/extension-underline'
 import Youtube from '@tiptap/extension-youtube'
-import { getMarkRange, Range, useEditor } from '@tiptap/react'
+import { getMarkRange, useEditor } from '@tiptap/react'
+import type { Range } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import TipTapImage from '@tiptap/extension-image'
 import { useState } from 'react'
@@ -26,15 +27,19 @@ const useEditorConfig = (options?: Options) => {
         linkOnPaste: false,
         openOnClick: false,
         HTMLAttributes: {
-          target: '',
+          // target: '',
+          target: '_blank',
+          rel: 'noopener noreferrer nofollow',
         },
       }),
 
       Youtube.configure({
-        width: 840,
-        height: 472.5,
+        // width: 840,
+        // height: 472.5,
+        nocookie:true,
         HTMLAttributes: {
-          class: 'mx-auto rounded',
+          // class: 'mx-auto rounded',
+          class: 'w-full aspect-video max-w-[840px] mx-auto rounded',
         },
       }),
       TipTapImage.configure({ HTMLAttributes: { class: 'mx-auto' } }),
@@ -43,11 +48,13 @@ const useEditorConfig = (options?: Options) => {
       //* used to change selected text, handleClick just take inside selectionRange and didnt do anything, but useEffect below do job
       handleClick(view, position, event) {
         const { state } = view
-        const selectionRange = getMarkRange(
+        // const selectionRange = getMarkRange(
+        const range = getMarkRange(
           state.doc.resolve(position),
           state.schema.marks.link,
         )
-        if (selectionRange) setSelectionRange(selectionRange)
+        //if (selectionRange) setSelectionRange(selectionRange)
+        if (range) setSelectionRange(selectionRange)
       },
 
       attributes: {
