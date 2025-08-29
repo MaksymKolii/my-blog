@@ -31,8 +31,13 @@ type ViewAuthorProfile = {
   github?: string
 }
 
-const host ='https://my-blog-rho-tan-56.vercel.app'
-// const host = process.env.NEXTAUTH_URL ?? 'http://localhost:3000'
+// const host ='https://my-blog-rho-tan-56.vercel.app'
+
+const host =
+  process.env.NEXT_PUBLIC_SITE_URL ?? // клиентский URL из .env(.local)
+  (process.env.NODE_ENV === 'production'
+    ? (process.env.NEXTAUTH_URL ?? 'https://my-blog-rho-tan-56.vercel.app')
+    : 'http://localhost:3000')
 
 const SinglePost: NextPage<ISinglePost> = ({ post }) => {
   const {
@@ -177,12 +182,22 @@ const SinglePost: NextPage<ISinglePost> = ({ post }) => {
           <AuthorInfo profile={authorProfile} />
         </div>
         <div className="pt-5">
-          <h3 className="text-xl rounded-sm font-semibold bg-secondary-dark p-2 text-primary mb-4">Related Posts: 
-
+          <h3 className="text-xl rounded-sm font-semibold bg-secondary-dark p-2 text-primary mb-4">
+            Related Posts:
           </h3>
-          <div className="flex flex-col space-y-4">{relatedPosts.map(p=>{
-            return<Link className='font-semibold text-primary-dark dark:text-primary hover:underline' key={p.id + p.slug} href={p.slug}>{p.title}</Link>
-          })}</div>
+          <div className="flex flex-col space-y-4">
+            {relatedPosts.map((p) => {
+              return (
+                <Link
+                  className="font-semibold text-primary-dark dark:text-primary hover:underline"
+                  key={p.id + p.slug}
+                  href={p.slug}
+                >
+                  {p.title}
+                </Link>
+              )
+            })}
+          </div>
         </div>
         {/*  comment form */}
         <Comments belongsTo={id} />
