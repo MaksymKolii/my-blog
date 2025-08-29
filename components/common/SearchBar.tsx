@@ -1,14 +1,30 @@
-import { FC } from 'react'
+import { FC, FormEventHandler, useState } from 'react'
 
-interface ISearchBar {}
+interface ISearchBar {
+  onsubmit(query:string):void
+}
 
-const SearchBar: FC<ISearchBar> = (props): JSX.Element => {
+const SearchBar: FC<ISearchBar> = ({onsubmit}): JSX.Element => {
+
+  const [query, setQuery]=useState('')
+
+  const handleSubmit: FormEventHandler<HTMLFormElement> =(e) =>{
+
+    e.preventDefault()
+    onsubmit(query)
+  }
   return (
-    <input
-      placeholder="search..."
-      type="text"
-      className="border-2 bg-transparent border-secondary-dark rounded  p-2  text-primary-dark dark:text-primary focus:border-primary-dark dark:focus:border-primary outline-none transition"
-    />
+    <form onSubmit={handleSubmit}>
+      <input
+        placeholder="search..."
+        type="text"
+        className="border-2 bg-transparent
+       border-secondary-dark rounded  p-2  text-primary-dark
+        dark:text-primary focus:border-primary-dark dark:focus:border-primary outline-none transition"
+        value={query}
+        onChange={({target})=> setQuery(target.value)}
+      />
+    </form>
   )
 }
 

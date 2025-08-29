@@ -52,10 +52,19 @@ const AdminSecondaryNav: FC<IAdminSecondaryNav> = (props): JSX.Element => {
     () => getInitialsNextConsonant(profile?.name),
     [profile?.name],
   )
+
+const handleSearchSubmit=(query:string)=>{
+if(!query) return
+// search
+
+router.push('/admin/search?title='+query)
+
+}
+
   return (
     <div className="flex items-center justify-between">
       {/* search bar */}
-      <SearchBar />
+      <SearchBar onsubmit={handleSearchSubmit}/>
       {/* options / profile head */}
       <DropdownOptions
         head={
