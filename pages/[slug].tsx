@@ -31,8 +31,8 @@ type ViewAuthorProfile = {
   github?: string
 }
 
-// const host ='http://localhost:3000'
-const host = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+const host ='https://my-blog-rho-tan-56.vercel.app'
+// const host = process.env.NEXTAUTH_URL ?? 'http://localhost:3000'
 
 const SinglePost: NextPage<ISinglePost> = ({ post }) => {
   const {
@@ -47,7 +47,7 @@ const SinglePost: NextPage<ISinglePost> = ({ post }) => {
     createdAt,
     relatedPosts,
   } = post
-  console.log('relatedPosts:', relatedPosts)
+  // console.log('relatedPosts:', relatedPosts)
   type LikesState = { likedByOwner: boolean; count: number }
   const [likes, setLikes] = useState<LikesState>({
     likedByOwner: false,
@@ -181,7 +181,7 @@ const SinglePost: NextPage<ISinglePost> = ({ post }) => {
 
           </h3>
           <div className="flex flex-col space-y-4">{relatedPosts.map(p=>{
-            return<Link className='font-semibold text-primary-dark dark:text-primary hover:underline' key={p.id} href={p.slug}>{p.title}</Link>
+            return<Link className='font-semibold text-primary-dark dark:text-primary hover:underline' key={p.id + p.slug} href={p.slug}>{p.title}</Link>
           })}</div>
         </div>
         {/*  comment form */}
