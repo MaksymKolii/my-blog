@@ -52,11 +52,9 @@ export const getServerSideProps: GetServerSideProps<
     return {
       props: {
         post: {
-          //* Преобразуем _id в строку -- В MongoDB идентификаторы документов (_id) хранятся как ObjectId, который является специфическим типом данных, несущим не только уникальный ID, но и информацию о времени создания
           id: _id.toString(),
           title,
           content,
-          //*  приведение массива tags к строковому формату, объединяя элементы массива через запятую т.к. tags from props - array
           tags: tags.join(', '),
           meta: meta,
           thumbnail: thumbnail?.url || '',

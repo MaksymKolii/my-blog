@@ -1,6 +1,6 @@
 import cloudinary from '@/lib/cloudinary'
 import dbConnect from '@/lib/dbConnect'
-import { formatPosts, isAdmin, readFile, readPostsFromDb } from '@/lib/utils'
+import { formatPosts, isAdmin, isAuth, readFile, readPostsFromDb } from '@/lib/utils'
 import { postValidationSchema, validateSchema } from '@/lib/validator'
 import Post from '@/models/Post'
 import { IncomingPost } from '@/utils/types'
@@ -26,7 +26,9 @@ const handler: NextApiHandler = async (req, res) => {
 const createNewPost: NextApiHandler = async (req, res) => {
   const admin = await isAdmin(req, res)
 
-  if (!admin) return res.status(401).json({ error: 'unauthorized request!!!!' })
+  const user = await isAuth(req, res)
+
+  if (!admin || !user) return res.status(401).json({ error: 'unauthorized request!!!!' })
 
   //* work because formData return obj with arrays inside we need to Преобразуем значения полей в строки, если они массивы
   const { files, body } = await readFile<IncomingPost>(req)
@@ -84,7 +86,7 @@ const createNewPost: NextApiHandler = async (req, res) => {
     return res.status(400).json({ error: 'Slug need to be unique!' })
 
   // create new post
-  const newPost = new Post({ title, slug, content, meta, tags })
+  const newPost = new Post({ title, slug, content, meta, tags, author: user.id })
 
   // uploading thumbnail if there is any
   const thumbnail = files.thumbnail as formidable.File[]

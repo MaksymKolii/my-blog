@@ -15,6 +15,7 @@ import LikeHeart from './LikeHeart'
 interface ICommentCard {
   comment: CommentResponse
  showControls?: boolean
+ busy?: boolean
   onUpdateSubmit?(content: string): void
   onReplySubmit?(content: string): void
   onDeleteClick?(): void
@@ -24,6 +25,7 @@ interface ICommentCard {
 const CommentCard: FC<ICommentCard> = ({
   comment,
   showControls = false,
+  busy,
   onUpdateSubmit,
   onReplySubmit,
   onDeleteClick,
@@ -75,9 +77,6 @@ const CommentCard: FC<ICommentCard> = ({
       <ProfileIcon nameInitial={name?.[0]?.toUpperCase() || 'U'} avatar={avatar} />
 
       <div className="flex-1">
-        {/* <h1 className='text-lg text-primary-dark dark:text-primary font-semibold'>
-					{name}
-				</h1> */}
         <h1 className="text-lg text-primary-dark dark:text-primary font-semibold">
           {isDeleted ? (
             <span className="text-gray-500">Deleted user</span>
@@ -97,7 +96,7 @@ const CommentCard: FC<ICommentCard> = ({
         </div>
         {!isDeleted && (
           <div className="flex space-x-4">
-            <LikeHeart liked={likedByOwner} label={likes + " likes"} onClick={onLikeClick}/>
+            <LikeHeart liked={likedByOwner} label={likes + " likes"} onClick={onLikeClick} busy={busy}/>
             <Button onClick={handleOnReplyClick}>
               <BsFillReplyAllFill />
               <span>Reply</span>

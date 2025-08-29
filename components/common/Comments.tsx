@@ -420,21 +420,26 @@
 
 // export default Comments
 
-
-
-
 //! ==============================================================
 
 import { FC, Fragment, useEffect, useState } from 'react'
 import axios, { CanceledError } from 'axios'
 import useAuth from '@/hooks/useAuth'
-import { CommentResponse } from '@/utils/types'
+import type { CommentResponse } from '@/utils/types'
 
 import CommentForm from './CommentForm'
 import CommentCard from './CommentCard'
 import ConfirmModal from './ConfirmModal'
 import { GitHubAuthButton } from '../button'
 import PageNavigator from './PageNavigator'
+
+
+type ApiEnvelope<T> = T & { success?: boolean; message?: string };
+type CommentEnvelope = ApiEnvelope<{ comment: CommentResponse }>;
+
+type CreateCommentResponse = CommentEnvelope;
+type UpdateLikeResponse  = CommentEnvelope;
+
 
 interface IComments {
   belongsTo?: string
@@ -446,6 +451,9 @@ const LIMIT = 5
 const Comments: FC<IComments> = ({ belongsTo, fetchAll }): JSX.Element => {
   const [comments, setComments] = useState<CommentResponse[]>()
   const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const [busyCommentLike, setBusyCommentLike] = useState(false)
+  const [selectedComment, setSelectedComment] =
+    useState<CommentResponse | null>(null)
   const [commentToDelete, setCommentToDelete] =
     useState<CommentResponse | null>(null)
 
@@ -531,7 +539,7 @@ const Comments: FC<IComments> = ({ belongsTo, fetchAll }): JSX.Element => {
   }
 
   // -------- API actions --------
-  const handleNewCommentSubmit = async (content: string) => {
+  const handleNewCommentSubmit1 = async (content: string) => {
     setSubmitting(true)
     try {
       const { data } = await axios.post('/api/comment', { content, belongsTo })
@@ -543,6 +551,27 @@ const Comments: FC<IComments> = ({ belongsTo, fetchAll }): JSX.Element => {
       setSubmitting(false)
     }
   }
+
+
+const handleNewCommentSubmit = async (content: string) => {
+  if (submitting) return;                  // защита от дабл-сабмита
+  const text = content.trim();
+  if (!text) return;                       // пустые не отправляем
+  setSubmitting(true);
+  try {
+    const { data } = await axios.post<CreateCommentResponse>(
+      '/api/comment',
+      { content: text, belongsTo }
+    );
+    setComments(prev => prev ? [...prev, data.comment] : [data.comment]);
+  } catch (error) {
+    console.error('Error creating comment:', error);
+  } finally {
+    setSubmitting(false);
+  }
+};
+
+
 
   const handleReplySubmit = async (replyComment: {
     content: string
@@ -590,15 +619,42 @@ const Comments: FC<IComments> = ({ belongsTo, fetchAll }): JSX.Element => {
     }
   }
 
-  const handleOnLikeClick = (comment: CommentResponse) => {
-    axios
-      .post('/api/comment/update-like', { commentId: comment.id })
-      .then(({ data }) => updateLikeComments(data.comment))
-      .catch((err) => console.log(err))
+  const handleOnLikeClick = async (comment: CommentResponse) => {
+    if (busyCommentLike) return // double-click guard
+    try {
+      setBusyCommentLike(true)
+      setSelectedComment(comment)
+      const { data } = await axios.post<UpdateLikeResponse>(
+        '/api/comment/update-like',
+        { commentId: comment.id },
+      )
+      updateLikeComments(data.comment)
+    } catch (err) {
+      console.error('update-like failed:', err)
+    } finally {
+      setBusyCommentLike(false)
+       setSelectedComment(null)
+    }
   }
+  // const handleOnLikeClick = (comment: CommentResponse) => {
+  //   setBusyCommentLike(true)
+   //  setSelectedComment(comment)
+  //   axios
+  //     .post('/api/comment/update-like', { commentId: comment.id })
+  //     .then(({ data }) => {
+  //       updateLikeComments(data.comment)
+  //       setBusyCommentLike(false)
+  //       setSelectedComment(null)
+  //     })
+  //     .catch((err) => {
+  //       console.log(err)
+  //       setBusyCommentLike(false)
+   //       setSelectedComment(null)
+  //     })
+  // }
 
   // -------- fetching --------
-  // Комменты конкретного поста
+  // Comments for a specific post
   useEffect(() => {
     if (!belongsTo) return
     const controller = new AbortController()
@@ -617,7 +673,7 @@ const Comments: FC<IComments> = ({ belongsTo, fetchAll }): JSX.Element => {
     return () => controller.abort()
   }, [belongsTo])
 
-  // Все комментарии (режим админ-страницы)
+  // All comments (admin-page mode)
   const fetchAllComments = async (targetPage = page, signal?: AbortSignal) => {
     try {
       setLoading(true)
@@ -629,7 +685,7 @@ const Comments: FC<IComments> = ({ belongsTo, fetchAll }): JSX.Element => {
       if (typeof data.hasMore === 'boolean') {
         setHasMore(data.hasMore)
       } else {
-        // запасная эвристика, если API не вернул hasMore
+        //  Fallback heuristic if the API didn’t return hasMore.
         setHasMore((data.comments?.length ?? 0) === LIMIT)
       }
     } catch (error) {
@@ -645,10 +701,11 @@ const Comments: FC<IComments> = ({ belongsTo, fetchAll }): JSX.Element => {
     if (fetchAll && !belongsTo) {
       fetchAllComments(page, controller.signal)
     } else {
-      // если выходим из режима "все", сброс страницы
+      //When leaving the “all” mode, reset the page.
       if (page !== 0) setPage(0)
     }
     return () => controller.abort()
+    // We intentionally exclude fetchAllComments from deps to avoid unnecessary reruns.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchAll, belongsTo, page])
 
@@ -696,6 +753,7 @@ const Comments: FC<IComments> = ({ belongsTo, fetchAll }): JSX.Element => {
               }
               onDeleteClick={() => handleOnDeleteClick(comment)}
               onLikeClick={() => handleOnLikeClick(comment)}
+              busy={selectedComment?.id === comment.id && busyCommentLike}
             />
 
             {replies?.length ? (
@@ -714,6 +772,7 @@ const Comments: FC<IComments> = ({ belongsTo, fetchAll }): JSX.Element => {
                     }
                     onDeleteClick={() => handleOnDeleteClick(reply)}
                     onLikeClick={() => handleOnLikeClick(reply)}
+                    busy={selectedComment?.id === reply.id && busyCommentLike}
                   />
                 ))}
               </div>
@@ -724,7 +783,6 @@ const Comments: FC<IComments> = ({ belongsTo, fetchAll }): JSX.Element => {
 
       {fetchAll && (
         <div className="mt-auto py-10 flex justify-end">
-    
           <PageNavigator
             onNextClick={handleOnNextClick}
             onPrevClick={handleOnPrevClick}
